@@ -1,4 +1,4 @@
-# FonaulogI — Phonology Practice Lab
+# Fanalag — Phonology Practice Lab
 
 A free, browser-based phonology practice website with a Wisconsin-inspired dark theme.
 
@@ -19,7 +19,7 @@ A free, browser-based phonology practice website with a Wisconsin-inspired dark 
 
 The site will be available at:
 
-**https://tcoan98.github.io/fonaulogI/**
+**https://tcoan98.github.io/fanalag/**
 
 Publishing can take a few minutes. Check the **Actions** tab or **Settings → Pages** for deployment status.
 
