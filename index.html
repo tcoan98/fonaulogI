@@ -80,7 +80,7 @@ button{
   transition:border-color .15s ease,background-color .15s ease,color .15s ease,box-shadow .15s ease;
 }
 button:hover:not(:disabled){border-color:#ed5057;background:#332328}
-button:focus-visible,select:focus-visible{outline:3px solid #ff737b;outline-offset:3px}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #ff737b;outline-offset:3px}
 button:disabled{opacity:.50;cursor:not-allowed}
 .tab.active,.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700;box-shadow:0 3px 12px rgba(197,5,12,.18)}
 .tab.active:hover:not(:disabled),.primary:hover:not(:disabled){background:var(--accent-hover);border-color:var(--accent-hover)}
@@ -183,6 +183,16 @@ nav.tabs .tab{flex:1 1 210px;min-height:48px}
 .soundline{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:15px 0}
 .soundbox{background:#24262d;border:1px solid #4b4d58;border-radius:11px;padding:10px 15px;min-width:104px;text-align:center}
 .soundbox strong{font-size:1.4rem;display:block;color:#fff}
+input[type="text"]{font:inherit;padding:12px 14px;border:1px solid #62636c;border-radius:9px;background:#2a2b33;color:#fff;min-height:48px;width:100%;max-width:560px}
+input[type="text"]::placeholder{color:#b0b0bc}
+.process-answer-setting{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:14px 0 8px;padding:12px 15px;border:1px solid var(--line);border-radius:12px;background:#222329}
+.process-answer-setting strong{font-size:.88rem}
+.answer-style-buttons{display:flex;gap:7px;flex-wrap:wrap}
+.answer-style-buttons button{padding:8px 13px}
+.answer-style-buttons button.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.typed-process-form{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
+.typed-process-form input{flex:1 1 230px}
+.typed-process-form button{min-height:48px}
 select{
   font:inherit;padding:9px 12px;
   border:1px solid #62636c;border-radius:9px;
@@ -243,6 +253,13 @@ footer{font-size:.86rem;color:var(--muted);margin-top:24px;border-top:1px solid 
       <option value="produce">Apply a process</option>
     </select>
   </div>
+  <div id="proc-answer-setting" class="process-answer-setting">
+    <strong id="answer-style-label">Answer format</strong>
+    <div class="answer-style-buttons" role="group" aria-labelledby="answer-style-label">
+      <button type="button" id="proc-choice-style" class="active" aria-pressed="true">Select from options</button>
+      <button type="button" id="proc-typed-style" aria-pressed="false">Type answer (harder)</button>
+    </div>
+  </div>
   <p class="muted" style="margin:.15rem 0 .65rem;font-size:.88rem">Illustrative broad IPA examples for study; some sound changes can fit more than one descriptive pattern depending on context. Not developmental-age norms.</p>
   <div class="process-prompt-toolbar">
     <button class="refresh-word" id="proc-refresh" type="button" title="Replace this word with a different one" aria-label="Try a different word"><span class="refresh-icon" aria-hidden="true">↻</span> Different word</button>
@@ -250,6 +267,11 @@ footer{font-size:.86rem;color:var(--muted);margin-top:24px;border-top:1px solid 
   <div class="prompt" id="proc-prompt">/kæt/ → [tæt]<small>Adult target → child's production</small></div>
   <div class="step active" id="step-one"><span>1</span><strong>Choose the phonological process</strong></div>
   <div id="process-keyboard" class="grid"></div>
+  <form id="typed-process-form" class="typed-process-form hidden" autocomplete="off">
+    <label class="hidden" for="typed-process-input">Name of phonological process</label>
+    <input id="typed-process-input" type="text" aria-label="Name of phonological process" placeholder="Enter the process name" spellcheck="false" autocapitalize="off" required>
+    <button class="primary" id="typed-process-continue" type="submit">Continue to sound change</button>
+  </form>
   <div class="step hidden" id="step-two"><span>2</span><strong id="sound-instruction">Select the affected sound change</strong></div>
   <div id="ipa-stage" class="hidden">
     <p id="ipa-help" class="muted">Select the original sound (or None for insertion), then the replacement (or None for deletion).</p>
@@ -3120,7 +3142,7 @@ function applicationForProcess(target,process){
 }
 const ROUND_LENGTH=10;
 let invIndex=0,invAnswered=false,invMode="category",invRound=[],invScore=0,invSelected=new Set(),invFeatures=["","", ""],invHistory=[];
-let procIndex=0,procQuestionIndex=0,procScore=0,procHistory=[],procUsedWords=new Set(),chosenProcess="",chosenOriginal=null,chosenReplacement=null,chosenInsertionAt=null,procAnswered=false;
+let procIndex=0,procQuestionIndex=0,procScore=0,procHistory=[],procUsedWords=new Set(),chosenProcess="",chosenOriginal=null,chosenReplacement=null,chosenInsertionAt=null,procAnswered=false,procAnswerStyle="choices";
 const ipaKeys=["p","b","t","d","k","ɡ","f","v","θ","ð","s","z","ʃ","ʒ","h","tʃ","dʒ","m","n","ŋ","l","ɹ","w","j","i","ɪ","ɛ","æ","ɑ","ɔ","ʊ","u","ʌ","ə","ɝ","eɪ","aɪ","ɔɪ","aʊ","oʊ"];
 function shuffle(a){const out=[...a];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
 function showTab(tab){document.querySelectorAll(".tab[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));$("inventory").classList.toggle("hidden",tab!=="inventory");$("process").classList.toggle("hidden",tab!=="process")}
@@ -3302,6 +3324,24 @@ function moveToDifferentProcessWord(){
  if(!selectUnseenProcessWord())return;
  renderProcess();
 }
+// Typed answers are case-insensitive and ignore spaces and hyphens; spelling still matters.
+function normalizeProcessAnswer(value){return value.normalize("NFKC").toLowerCase().trim().replace(/[\s\-‐‑‒–—]+/gu,"");}
+function processAnswerMatches(answer,expected){return normalizeProcessAnswer(answer)===normalizeProcessAnswer(expected);}
+function setProcessAnswerStyle(style){
+ procAnswerStyle=style;
+ for(const [value,id] of [["choices","proc-choice-style"],["typed","proc-typed-style"]]){
+   const button=$(id),active=value===style;
+   button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active));
+ }
+ startProcessRound();
+}
+$("proc-choice-style").onclick=()=>{if(procAnswerStyle!=="choices")setProcessAnswerStyle("choices")};
+$("proc-typed-style").onclick=()=>{if(procAnswerStyle!=="typed")setProcessAnswerStyle("typed")};
+$("typed-process-form").onsubmit=event=>{
+ event.preventDefault();
+ const response=$("typed-process-input").value.trim();
+ if(response && !procAnswered && $("proc-mode").value==="recognize")selectProcess(response);
+};
 function renderProcess(){
  const q=currentQ(),mode=$("proc-mode").value;procAnswered=false;chosenProcess="";chosenOriginal=null;chosenReplacement=null;chosenInsertionAt=null;
  $("proc-count").textContent=`Question ${procIndex+1} of ${ROUND_LENGTH}`;
@@ -3309,18 +3349,25 @@ function renderProcess(){
  $("proc-feedback").className="feedback hidden";$("proc-next").disabled=true;
  $("proc-next").textContent=procIndex===ROUND_LENGTH-1?"See results":"Next question";
  $("proc-refresh").disabled=!canRefreshProcessWord();$("proc-refresh").classList.remove("hidden");$("sound-back").disabled=false;
+ const typedMode=mode==="recognize"&&procAnswerStyle==="typed";
+ $("proc-answer-setting").classList.toggle("hidden",mode!=="recognize");
+ $("typed-process-form").classList.toggle("hidden",!typedMode);
+ $("typed-process-input").value="";$("typed-process-input").disabled=false;$("typed-process-continue").disabled=false;
+ $("step-one").querySelector("strong").textContent=typedMode?"Type the phonological process":"Choose the phonological process";
  $("ipa-stage").classList.add("hidden");$("step-two").classList.add("hidden");$("step-one").classList.remove("hidden");
- $("process-keyboard").classList.remove("hidden");$("process-keyboard").innerHTML="";
+ $("process-keyboard").classList.toggle("hidden",typedMode);$("process-keyboard").innerHTML="";
  $("step-one").classList.add("active");$("step-two").classList.remove("active");$("proc-submit").disabled=true;
  // Recognition retains the full list; production only shows processes with a
  // valid, constructible sound change for the currently displayed adult word.
  const available=mode==="produce"
    ? [...new Set(applicationsForWord(q.target).map(a=>a.answer))]
    : processes;
- shuffle(available).forEach(p=>{const b=document.createElement("button");b.className="choice";b.textContent=p;b.onclick=()=>selectProcess(p);$("process-keyboard").appendChild(b)});
+ if(!typedMode)shuffle(available).forEach(p=>{const b=document.createElement("button");b.className="choice";b.textContent=p;b.onclick=()=>selectProcess(p);$("process-keyboard").appendChild(b)});
 }
 function selectProcess(p){
- chosenProcess=p;[...$("process-keyboard").children].forEach(b=>{b.disabled=true;b.classList.toggle("selected",b.textContent===p)});
+ chosenProcess=p;
+ const typedMode=$("proc-mode").value==="recognize"&&procAnswerStyle==="typed";
+ $("typed-process-form").classList.add("hidden");[...$("process-keyboard").children].forEach(b=>{b.disabled=true;b.classList.toggle("selected",b.textContent===p)});
  $("step-one").classList.remove("active");$("step-two").classList.remove("hidden");$("step-two").classList.add("active");
  $("process-keyboard").classList.add("hidden");$("ipa-stage").classList.remove("hidden");
  const q=currentQ(),mode=$("proc-mode").value;
@@ -3404,12 +3451,19 @@ function renderReplacementKeys(){
    $("replacement-keys").appendChild(b);
  });
 }
-$("sound-back").onclick=()=>{chosenProcess="";chosenOriginal=null;chosenReplacement=null;chosenInsertionAt=null;$("ipa-stage").classList.add("hidden");$("step-two").classList.add("hidden");$("step-one").classList.add("active");$("process-keyboard").classList.remove("hidden");[...$("process-keyboard").children].forEach(b=>{b.disabled=false;b.classList.remove("selected")})};
+$("sound-back").onclick=()=>{
+ chosenProcess="";chosenOriginal=null;chosenReplacement=null;chosenInsertionAt=null;
+ $("ipa-stage").classList.add("hidden");$("step-two").classList.add("hidden");$("step-one").classList.add("active");
+ const typedMode=$("proc-mode").value==="recognize"&&procAnswerStyle==="typed";
+ $("process-keyboard").classList.toggle("hidden",typedMode);
+ $("typed-process-form").classList.toggle("hidden",!typedMode);
+ [...$("process-keyboard").children].forEach(b=>{b.disabled=false;b.classList.remove("selected")});
+};
 $("proc-submit").onclick=()=>{
  const q=currentQ(),mode=$("proc-mode").value;
  const constructed=buildAppliedProduction(q.target,chosenOriginal,chosenReplacement,chosenInsertionAt);
  const expected=mode==="produce"?applicationForProcess(q.target,chosenProcess):q;
- const ok=!!expected && (mode==="recognize"?chosenProcess===q.answer:true)
+ const ok=!!expected && (mode==="recognize"?processAnswerMatches(chosenProcess,q.answer):true)
    && chosenOriginal===expected.from && chosenReplacement===expected.to
    && (expected.from!=="" || chosenInsertionAt===expected.insertAt)
    && constructed===expected.child;
@@ -3431,13 +3485,14 @@ $("proc-submit").onclick=()=>{
    $(id).querySelectorAll("button").forEach(b=>b.disabled=true);
  }
  $("sound-back").disabled=true;
+ $("typed-process-input").disabled=true;
 };
 function finishProcessRound(){
  $("proc-count").textContent="Round complete";
  $("proc-prompt").textContent=`${procScore} / ${ROUND_LENGTH}`;
  $("proc-refresh").classList.add("hidden");
  $("step-one").classList.add("hidden");$("step-two").classList.add("hidden");
- $("process-keyboard").classList.add("hidden");$("ipa-stage").classList.add("hidden");
+ $("process-keyboard").classList.add("hidden");$("typed-process-form").classList.add("hidden");$("ipa-stage").classList.add("hidden");
  $("proc-feedback").className="feedback "+(procScore>=8?"good":"");
  $("proc-feedback").textContent="Round complete — review your responses, or restart for another set of questions.";
  $("proc-next").disabled=true;$("proc-next").textContent="Round complete";
