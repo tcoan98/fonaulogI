@@ -1,0 +1,3462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phonology Practice Lab | Wisconsin Dark Edition — Balanced 300 Words</title>
+<style>
+/* Wisconsin-inspired dark palette. Based on UW–Madison Badger Red (#C5050C),
+   white (#FFFFFF), and official black (#121212); independent study project. */
+:root{
+  color-scheme:dark;
+  --bg:#121212;
+  --panel:#1c1d22;
+  --panel-raised:#24262c;
+  --ink:#f6f7f8;
+  --muted:#b9bec8;
+  --line:#3b3e47;
+  --accent:#c5050c;
+  --accent-hover:#e00a14;
+  --accent-soft:#37191d;
+  --accent-ink:#ffc0c3;
+  --good:#9be9c1;
+  --bad:#ffa0a5;
+  --green-bg:#153b2d;
+  --red-bg:#431d23;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  min-height:100vh;
+  background:radial-gradient(ellipse 680px 410px at 13% -16%,rgba(197,5,12,.15),transparent 82%),
+    radial-gradient(ellipse 650px 600px at 108% 30%,rgba(197,5,12,.065),transparent 77%),var(--bg);
+  color:var(--ink);
+  font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{content:"";display:block;height:5px;background:var(--accent)}
+main{max-width:980px;margin:0 auto;padding:29px 22px 56px}
+header{
+  position:relative;overflow:hidden;
+  margin:0 0 23px;
+  padding:30px 30px 31px;
+  border:1px solid var(--line);
+  border-radius:19px;
+  background:linear-gradient(115deg,#24242a 2%,#1c1d22 61%,#291a20 100%);
+  box-shadow:0 12px 34px rgba(0,0,0,.18);
+}
+header::after{
+  content:"";
+  position:absolute;
+  top:-90px;right:-70px;
+  width:320px;height:320px;
+  border:1px solid rgba(197,5,12,.28);
+  border-radius:50%;
+  box-shadow:0 0 0 48px rgba(197,5,12,.04),0 0 0 96px rgba(197,5,12,.025);
+  pointer-events:none;
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:9px;
+  margin-bottom:13px;
+  color:#ffc0c3;
+  font-size:.73rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+}
+.eyebrow::before{content:"";width:23px;height:3px;border-radius:3px;background:var(--accent)}
+h1{position:relative;z-index:1;font-size:clamp(1.95rem,4.5vw,2.9rem);line-height:1.12;letter-spacing:-.04em;margin:0 0 10px;font-weight:800}
+h2{font-size:1.22rem;letter-spacing:-.02em;margin:0 0 12px;line-height:1.3}
+p{margin:7px 0;color:var(--muted)}
+header p{position:relative;z-index:1;margin:0;max-width:640px;font-size:1.03rem;color:#d5d7dc}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}
+button{
+  font:inherit;
+  font-weight:550;
+  cursor:pointer;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px 15px;
+  background:var(--panel-raised);
+  color:var(--ink);
+  transition:border-color .15s ease,background-color .15s ease,color .15s ease,box-shadow .15s ease;
+}
+button:hover:not(:disabled){border-color:#ed5057;background:#332328}
+button:focus-visible,select:focus-visible{outline:3px solid #ff737b;outline-offset:3px}
+button:disabled{opacity:.50;cursor:not-allowed}
+.tab.active,.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700;box-shadow:0 3px 12px rgba(197,5,12,.18)}
+.tab.active:hover:not(:disabled),.primary:hover:not(:disabled){background:var(--accent-hover);border-color:var(--accent-hover)}
+nav.tabs{padding:5px;background:#1b1c21;border:1px solid #35363e;border-radius:14px;gap:6px;margin:0 0 21px}
+nav.tabs .tab{flex:1 1 210px;min-height:48px}
+.panel{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:25px 26px;
+  margin:14px 0;
+  box-shadow:0 10px 28px rgba(0,0,0,.20);
+}
+.topline{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.pill{
+  font-size:.8rem;padding:5px 11px;border-radius:999px;
+  background:var(--accent-soft);
+  border:1px solid #663138;
+  color:var(--accent-ink);
+  font-weight:750;letter-spacing:.02em;
+}
+.prompt{
+  font-size:clamp(1.45rem,3.5vw,1.95rem);
+  text-align:center;
+  margin:14px 0;
+  padding:22px 15px;
+  border:1px solid #41434d;
+  border-radius:13px;
+  background:linear-gradient(165deg,#27292f,#212227);
+  color:var(--ink);
+  font-weight:700;
+  overflow-wrap:anywhere;
+}
+.prompt small{display:block;font-size:.88rem;color:var(--muted);font-weight:450;margin-top:7px}
+.process-prompt-toolbar{display:flex;justify-content:flex-end;margin:16px 0 0}
+.refresh-word{display:inline-flex;align-items:center;gap:8px;background:var(--accent-soft);color:var(--accent-ink);border-color:#70353c;font-weight:700}
+.refresh-word:hover:not(:disabled){background:#4a2027}
+.refresh-word .refresh-icon{font-size:1.35rem;font-weight:650;line-height:1}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.feature-group{margin:16px 0}
+.feature-group>strong{display:block;margin:0 0 9px;font-size:.89rem;letter-spacing:.045em;text-transform:uppercase;color:#dee1e7}
+.feature-options{display:flex;flex-wrap:wrap;gap:8px}
+.feature-options button{flex:1 1 135px}
+.feature-options .selected,.choice.selected{
+  border:2px solid #f5656c;
+  padding:9px 14px;
+  background:#492328;
+  color:#fff;
+  font-weight:700;
+}
+.choice{text-align:left;min-height:49px}
+.choice.correct,.feature-options .correct{
+  border-color:#65c596;
+  background:var(--green-bg);
+  color:var(--good);
+  opacity:1;
+}
+.choice.wrong,.feature-options .wrong{
+  border-color:#e1767d;
+  background:var(--red-bg);
+  color:var(--bad);
+  opacity:1;
+}
+.keyboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(55px,1fr));gap:9px;margin:13px 0}
+.ipa-inventory-keyboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(51px,1fr));gap:8px;margin:13px 0}
+.ipa-inventory-keyboard .key{min-height:49px}
+.key{font-size:1.23rem;min-height:52px;padding:8px 4px;font-weight:600}
+.key.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+.key.correct{background:var(--green-bg);border-color:#65c596;color:var(--good);opacity:1}
+.key.wrong{background:var(--red-bg);border-color:#e1767d;color:var(--bad);opacity:1}
+.key.missed{border:2px dashed #65c596;background:var(--green-bg);color:var(--good);opacity:1}
+.step{display:flex;gap:10px;align-items:center;margin:16px 0 12px}
+.step span{border-radius:50%;width:29px;height:29px;flex:0 0 29px;display:grid;place-items:center;background:#343740;color:#d0d5de;font-weight:800}
+.step.active span{background:var(--accent);color:#fff}
+.step strong{font-size:.98rem}
+.hidden{display:none!important}
+.feedback{
+  padding:13px 15px;border-radius:10px;margin-top:16px;
+  background:#2b2c33;color:#e4e5e9;border:1px solid #464852;
+}
+.feedback.good{background:var(--green-bg);color:var(--good);border-color:#386a50}
+.feedback.bad{background:var(--red-bg);color:#ffb8bc;border-color:#87434b}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:19px}
+.review-panel{margin-top:22px;padding-top:19px;border-top:1px solid var(--line)}
+.review-panel h3{font-size:1.17rem;margin:0 0 6px}
+.review-list{display:grid;gap:13px;margin-top:15px}
+.review-item{border:1px solid #474951;background:#25262c;border-radius:12px;padding:15px 17px}
+.review-item.good{border-left:4px solid #65c596}
+.review-item.bad{border-left:4px solid #e1767d}
+.review-item-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.review-item-head strong{font-size:.94rem}
+.review-status{font-size:.82rem;font-weight:800}
+.review-item.good .review-status{color:var(--good)}
+.review-item.bad .review-status{color:var(--bad)}
+.review-question{color:#f3f3f4;font-weight:650;margin:8px 0 10px;overflow-wrap:anywhere}
+.review-item p{margin:5px 0;color:#d7d8dd;overflow-wrap:anywhere}
+.review-item p strong{color:#f6f7f8}
+.review-note{font-size:.90rem}
+.muted{font-size:.91rem;color:var(--muted)}
+.soundline{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:15px 0}
+.soundbox{background:#24262d;border:1px solid #4b4d58;border-radius:11px;padding:10px 15px;min-width:104px;text-align:center}
+.soundbox strong{font-size:1.4rem;display:block;color:#fff}
+select{
+  font:inherit;padding:9px 12px;
+  border:1px solid #62636c;border-radius:9px;
+  background:#2a2b33;color:#fff;min-height:44px;
+}
+footer{font-size:.86rem;color:var(--muted);margin-top:24px;border-top:1px solid var(--line);padding:20px 4px}
+@media(max-width:540px){
+  main{padding:18px 12px 36px}
+  header{padding:24px 19px}
+  .panel{padding:19px 15px}
+  .prompt{font-size:1.45rem}
+  .topline h2{max-width:100%}
+  nav.tabs .tab{flex:1 1 145px}
+  .feature-options button{flex:1 1 120px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="eyebrow">Wisconsin-inspired study edition</div>
+  <h1>Phonology Practice Lab</h1>
+  <p>Practice American English phonemes and common phonological processes with interactive IPA selections.</p>
+</header>
+<nav class="tabs" aria-label="Quiz selection">
+  <button class="tab active" data-tab="inventory">IPA inventory</button>
+  <button class="tab" data-tab="process">Phonological processes</button>
+</nav>
+
+<section id="inventory" class="panel">
+  <div class="topline"><h2>American English consonant inventory</h2><span class="pill" id="inv-count">Question 1 of 10</span></div>
+  <p>Choose a quiz style. Each round contains 10 consonant-classification questions using voicing, place, and manner of articulation.</p>
+  <div class="actions" style="margin:10px 0 16px">
+    <button class="tab active" id="inv-mode-category">Symbol → category</button>
+    <button class="tab" id="inv-mode-symbol">Category → IPA symbol</button>
+  </div>
+  <p id="inv-instruction">Identify the voicing, place, and manner of the displayed consonant.</p>
+  <div class="prompt" id="inv-symbol">/p/</div>
+  <div id="inv-feature-fields" class="hidden"></div>
+  <div class="grid" id="inv-choices"></div>
+  <div class="actions"><button class="primary" id="inv-submit" disabled>Submit answer</button></div>
+  <div id="inv-feedback" class="feedback hidden" aria-live="polite"></div>
+  <div class="actions"><button class="primary" id="inv-next" disabled>Next question</button><button id="inv-review-button" class="hidden" type="button" aria-expanded="false" aria-controls="inv-review">Review Quiz</button><button id="inv-reset">Restart 10-question quiz</button></div>
+  <div id="inv-review" class="review-panel hidden" aria-label="IPA inventory quiz review">
+    <h3>Quiz review</h3>
+    <p>Your questions in the order you answered them, with your responses and the correct answers.</p>
+    <div id="inv-review-list" class="review-list"></div>
+  </div>
+</section>
+
+<section id="process" class="panel hidden">
+  <div class="topline"><h2>Phonological processes</h2><span class="pill" id="proc-count">Question 1 of 10</span></div>
+  <div class="topline">
+    <p>Practice with 300 unique words: 18–19 curated examples for each of 16 processes. Each round uses 10 randomly selected words without repeats. Choose whether to recognize a process or build a production.</p>
+    <select id="proc-mode" aria-label="Question mode">
+      <option value="recognize">Identify the process</option>
+      <option value="produce">Apply a process</option>
+    </select>
+  </div>
+  <p class="muted" style="margin:.15rem 0 .65rem;font-size:.88rem">Illustrative broad IPA examples for study; some sound changes can fit more than one descriptive pattern depending on context. Not developmental-age norms.</p>
+  <div class="process-prompt-toolbar">
+    <button class="refresh-word" id="proc-refresh" type="button" title="Replace this word with a different one" aria-label="Try a different word"><span class="refresh-icon" aria-hidden="true">↻</span> Different word</button>
+  </div>
+  <div class="prompt" id="proc-prompt">/kæt/ → [tæt]<small>Adult target → child's production</small></div>
+  <div class="step active" id="step-one"><span>1</span><strong>Choose the phonological process</strong></div>
+  <div id="process-keyboard" class="grid"></div>
+  <div class="step hidden" id="step-two"><span>2</span><strong id="sound-instruction">Select the affected sound change</strong></div>
+  <div id="ipa-stage" class="hidden">
+    <p id="ipa-help" class="muted">Select the original sound (or None for insertion), then the replacement (or None for deletion).</p>
+    <div class="soundline">
+      <div class="soundbox"><span class="muted">Original sound</span><strong id="original-sound">—</strong></div>
+      <div aria-hidden="true">→</div>
+      <div class="soundbox"><span class="muted">Replacement</span><strong id="replacement-sound">—</strong></div>
+    </div>
+    <div id="original-keys" class="keyboard"></div>
+    <div id="insertion-wrap" class="hidden">
+      <p class="muted">Where is the new sound inserted? Choose a position between sounds, or at the beginning or end.</p>
+      <div id="insertion-keys" class="grid"></div>
+    </div>
+    <div id="replacement-wrap" class="hidden">
+      <p class="muted">Choose a replacement sound, or select <strong>None</strong> if the original sound is deleted.</p>
+      <div id="replacement-keys" class="keyboard"></div>
+    </div>
+    <div id="production-wrap" class="hidden">
+      <p class="muted">Your constructed production:</p>
+      <div class="prompt" id="built-production">[ ]</div>
+    </div>
+    <div class="actions">
+      <button id="sound-back">Change process</button>
+      <button class="primary" id="proc-submit" disabled>Check answer</button>
+    </div>
+  </div>
+  <div id="proc-feedback" class="feedback hidden" aria-live="polite"></div>
+  <div class="actions"><button class="primary" id="proc-next" disabled>Next question</button><button id="proc-review-button" class="hidden" type="button" aria-expanded="false" aria-controls="proc-review">Review Quiz</button><button id="proc-reset">Restart quiz</button></div>
+  <div id="proc-review" class="review-panel hidden" aria-label="Phonological processes quiz review">
+    <h3>Quiz review</h3>
+    <p>Your questions in the order you answered them, with your responses and the correct answers.</p>
+    <div id="proc-review-list" class="review-list"></div>
+  </div>
+</section>
+<footer>Study tool, not a diagnostic instrument. Process examples are practice items; they should not be interpreted as age-based developmental norms. Broad IPA conventions and vowel realizations vary by dialect.</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+// Consonant-only feature inventory using classroom terminology: liquid and glide. /w/ uses simplified bilabial place here.
+const consonants=[
+["p","Voiceless","Bilabial","Stop"],["b","Voiced","Bilabial","Stop"],
+["t","Voiceless","Alveolar","Stop"],["d","Voiced","Alveolar","Stop"],
+["k","Voiceless","Velar","Stop"],["ɡ","Voiced","Velar","Stop"],
+["f","Voiceless","Labiodental","Fricative"],["v","Voiced","Labiodental","Fricative"],
+["θ","Voiceless","Dental","Fricative"],["ð","Voiced","Dental","Fricative"],
+["s","Voiceless","Alveolar","Fricative"],["z","Voiced","Alveolar","Fricative"],
+["ʃ","Voiceless","Postalveolar","Fricative"],["ʒ","Voiced","Postalveolar","Fricative"],
+["h","Voiceless","Glottal","Fricative"],
+["tʃ","Voiceless","Postalveolar","Affricate"],["dʒ","Voiced","Postalveolar","Affricate"],
+["m","Voiced","Bilabial","Nasal"],["n","Voiced","Alveolar","Nasal"],["ŋ","Voiced","Velar","Nasal"],
+["l","Voiced","Alveolar","Liquid"],["ɹ","Voiced","Postalveolar","Liquid"],
+["w","Voiced","Bilabial","Glide"],["j","Voiced","Palatal","Glide"]
+];
+const featureNames=["Voicing","Place","Manner"];
+const featureOptions=[
+["Voiced","Voiceless"],
+["Bilabial","Labiodental","Dental","Alveolar","Postalveolar","Palatal","Velar","Glottal"],
+["Stop","Fricative","Affricate","Nasal","Liquid","Glide"]
+];
+const featureDescription=item=>`${item[1].toLowerCase()} ${item[2].toLowerCase()} ${item[3].toLowerCase()}`;
+function buildSymbolPromptPool(){
+ const prompts=[],seen=new Set();
+ const dims=[0,1,2];
+ for(let mask=1;mask<8;mask++){
+   const chosenDims=dims.filter(d=>mask&(1<<d));
+   const valueLists=chosenDims.map(d=>featureOptions[d]);
+   const walk=(idx,chosenValues)=>{
+     if(idx===chosenDims.length){
+       const matches=consonants.filter(c=>chosenDims.every((d,i)=>c[d+1]===chosenValues[i])).map(c=>c[0]);
+       if(matches.length===0)return;
+       const key=chosenDims.map((d,i)=>`${d}:${chosenValues[i]}`).join("|");
+       if(seen.has(key))return;
+       seen.add(key);
+       prompts.push({
+         dims:chosenDims,
+         values:[...chosenValues],
+         label:chosenValues.join(" ").toLowerCase(),
+         matches
+       });
+       return;
+     }
+     valueLists[idx].forEach(value=>walk(idx+1,[...chosenValues,value]));
+   };
+   walk(0,[]);
+ }
+ return prompts;
+}
+const symbolPromptPool=buildSymbolPromptPool();
+// Curated study bank: 300 distinct adult words, with 18 or 19 dedicated
+// recognition examples for each of the 16 requested process types.  These are illustrative productions, not
+// developmental norms or predictions for individual children.
+const processes=["Stopping","Deaffrication","Fronting","Depalatalization","Backing","Gliding","Vocalization","Cluster Reduction","Reduplication","Weak Syllable Deletion","Final Consonant Deletion","Labial Assimilation","Alveolar Assimilation","Velar Assimilation","Prevocalic Voicing","Devoicing"];
+const processQs=[
+  {
+    "word": "sun",
+    "target": "sʌn",
+    "child": "tʌn",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative is replaced by a stop. /s/ → [t]."
+  },
+  {
+    "word": "fish",
+    "target": "fɪʃ",
+    "child": "pɪʃ",
+    "answer": "Stopping",
+    "from": "f",
+    "to": "p",
+    "explain": "A fricative is replaced by a stop. /f/ → [p]."
+  },
+  {
+    "word": "van",
+    "target": "væn",
+    "child": "bæn",
+    "answer": "Stopping",
+    "from": "v",
+    "to": "b",
+    "explain": "A fricative is replaced by a stop. /v/ → [b]."
+  },
+  {
+    "word": "zoo",
+    "target": "zu",
+    "child": "du",
+    "answer": "Stopping",
+    "from": "z",
+    "to": "d",
+    "explain": "A fricative is replaced by a stop. /z/ → [d]."
+  },
+  {
+    "word": "thumb",
+    "target": "θʌm",
+    "child": "tʌm",
+    "answer": "Stopping",
+    "from": "θ",
+    "to": "t",
+    "explain": "A fricative is replaced by a stop. /θ/ → [t]."
+  },
+  {
+    "word": "chair",
+    "target": "tʃɛɹ",
+    "child": "ʃɛɹ",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "An affricate is replaced by a fricative. /tʃ/ → [ʃ]."
+  },
+  {
+    "word": "chew",
+    "target": "tʃu",
+    "child": "ʃu",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "An affricate is replaced by a fricative. /tʃ/ → [ʃ]."
+  },
+  {
+    "word": "jump",
+    "target": "dʒʌmp",
+    "child": "ʒʌmp",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "An affricate is replaced by a fricative. /dʒ/ → [ʒ]."
+  },
+  {
+    "word": "jam",
+    "target": "dʒæm",
+    "child": "ʒæm",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "An affricate is replaced by a fricative. /dʒ/ → [ʒ]."
+  },
+  {
+    "word": "cheese",
+    "target": "tʃiz",
+    "child": "ʃiz",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "An affricate is replaced by a fricative. /tʃ/ → [ʃ]."
+  },
+  {
+    "word": "cat",
+    "target": "kæt",
+    "child": "tæt",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "A velar consonant is produced at an alveolar place. /k/ → [t]."
+  },
+  {
+    "word": "goat",
+    "target": "ɡoʊt",
+    "child": "doʊt",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "A velar consonant is produced at an alveolar place. /ɡ/ → [d]."
+  },
+  {
+    "word": "key",
+    "target": "ki",
+    "child": "ti",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "A velar consonant is produced at an alveolar place. /k/ → [t]."
+  },
+  {
+    "word": "cow",
+    "target": "kaʊ",
+    "child": "taʊ",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "A velar consonant is produced at an alveolar place. /k/ → [t]."
+  },
+  {
+    "word": "gum",
+    "target": "ɡʌm",
+    "child": "dʌm",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "A velar consonant is produced at an alveolar place. /ɡ/ → [d]."
+  },
+  {
+    "word": "ship",
+    "target": "ʃɪp",
+    "child": "sɪp",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar sound is replaced by an alveolar sound. /ʃ/ → [s]."
+  },
+  {
+    "word": "shoe",
+    "target": "ʃu",
+    "child": "su",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar sound is replaced by an alveolar sound. /ʃ/ → [s]."
+  },
+  {
+    "word": "wish",
+    "target": "wɪʃ",
+    "child": "wɪs",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar sound is replaced by an alveolar sound. /ʃ/ → [s]."
+  },
+  {
+    "word": "sheep",
+    "target": "ʃip",
+    "child": "sip",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar sound is replaced by an alveolar sound. /ʃ/ → [s]."
+  },
+  {
+    "word": "shark",
+    "target": "ʃɑɹk",
+    "child": "sɑɹk",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar sound is replaced by an alveolar sound. /ʃ/ → [s]."
+  },
+  {
+    "word": "tea",
+    "target": "ti",
+    "child": "ki",
+    "answer": "Backing",
+    "from": "t",
+    "to": "k",
+    "explain": "An alveolar consonant is produced at a velar place. /t/ → [k]."
+  },
+  {
+    "word": "toe",
+    "target": "toʊ",
+    "child": "koʊ",
+    "answer": "Backing",
+    "from": "t",
+    "to": "k",
+    "explain": "An alveolar consonant is produced at a velar place. /t/ → [k]."
+  },
+  {
+    "word": "door",
+    "target": "dɔɹ",
+    "child": "ɡɔɹ",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar consonant is produced at a velar place. /d/ → [ɡ]."
+  },
+  {
+    "word": "day",
+    "target": "deɪ",
+    "child": "ɡeɪ",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar consonant is produced at a velar place. /d/ → [ɡ]."
+  },
+  {
+    "word": "nail",
+    "target": "neɪl",
+    "child": "ŋeɪl",
+    "answer": "Backing",
+    "from": "n",
+    "to": "ŋ",
+    "explain": "An alveolar consonant is produced at a velar place. /n/ → [ŋ]."
+  },
+  {
+    "word": "red",
+    "target": "ɹɛd",
+    "child": "wɛd",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "A liquid is replaced by a glide. /ɹ/ → [w]."
+  },
+  {
+    "word": "rain",
+    "target": "ɹeɪn",
+    "child": "weɪn",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "A liquid is replaced by a glide. /ɹ/ → [w]."
+  },
+  {
+    "word": "leaf",
+    "target": "lif",
+    "child": "wif",
+    "answer": "Gliding",
+    "from": "l",
+    "to": "w",
+    "explain": "A liquid is replaced by a glide. /l/ → [w]."
+  },
+  {
+    "word": "leg",
+    "target": "lɛɡ",
+    "child": "wɛɡ",
+    "answer": "Gliding",
+    "from": "l",
+    "to": "w",
+    "explain": "A liquid is replaced by a glide. /l/ → [w]."
+  },
+  {
+    "word": "rabbit",
+    "target": "ɹæbɪt",
+    "child": "wæbɪt",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "A liquid is replaced by a glide. /ɹ/ → [w]."
+  },
+  {
+    "word": "milk",
+    "target": "mɪlk",
+    "child": "mɪʊk",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "A coda liquid is replaced with a vowel. /l/ → [ʊ]."
+  },
+  {
+    "word": "help",
+    "target": "hɛlp",
+    "child": "hɛʊp",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "A coda liquid is replaced with a vowel. /l/ → [ʊ]."
+  },
+  {
+    "word": "belt",
+    "target": "bɛlt",
+    "child": "bɛʊt",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "A coda liquid is replaced with a vowel. /l/ → [ʊ]."
+  },
+  {
+    "word": "film",
+    "target": "fɪlm",
+    "child": "fɪʊm",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "A coda liquid is replaced with a vowel. /l/ → [ʊ]."
+  },
+  {
+    "word": "shelf",
+    "target": "ʃɛlf",
+    "child": "ʃɛʊf",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "A coda liquid is replaced with a vowel. /l/ → [ʊ]."
+  },
+  {
+    "word": "spoon",
+    "target": "spun",
+    "child": "pun",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "One consonant is omitted from a consonant cluster. /s/ → [∅]."
+  },
+  {
+    "word": "star",
+    "target": "stɑɹ",
+    "child": "tɑɹ",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "One consonant is omitted from a consonant cluster. /s/ → [∅]."
+  },
+  {
+    "word": "blue",
+    "target": "blu",
+    "child": "bu",
+    "answer": "Cluster Reduction",
+    "from": "l",
+    "to": "",
+    "explain": "One consonant is omitted from a consonant cluster. /l/ → [∅]."
+  },
+  {
+    "word": "frog",
+    "target": "fɹɔɡ",
+    "child": "fɔɡ",
+    "answer": "Cluster Reduction",
+    "from": "ɹ",
+    "to": "",
+    "explain": "One consonant is omitted from a consonant cluster. /ɹ/ → [∅]."
+  },
+  {
+    "word": "truck",
+    "target": "tɹʌk",
+    "child": "tʌk",
+    "answer": "Cluster Reduction",
+    "from": "ɹ",
+    "to": "",
+    "explain": "One consonant is omitted from a consonant cluster. /ɹ/ → [∅]."
+  },
+  {
+    "word": "bottle",
+    "target": "bɑtəl",
+    "child": "bɑbɑ",
+    "answer": "Reduplication",
+    "from": "təl",
+    "to": "bɑ",
+    "explain": "The first syllable is repeated to replace the following syllable. /təl/ → [bɑ]."
+  },
+  {
+    "word": "water",
+    "target": "wɔtɚ",
+    "child": "wɔwɔ",
+    "answer": "Reduplication",
+    "from": "tɚ",
+    "to": "wɔ",
+    "explain": "The first syllable is repeated to replace the following syllable. /tɚ/ → [wɔ]."
+  },
+  {
+    "word": "table",
+    "target": "teɪbəl",
+    "child": "teɪteɪ",
+    "answer": "Reduplication",
+    "from": "bəl",
+    "to": "teɪ",
+    "explain": "The first syllable is repeated to replace the following syllable. /bəl/ → [teɪ]."
+  },
+  {
+    "word": "baby",
+    "target": "beɪbi",
+    "child": "beɪbeɪ",
+    "answer": "Reduplication",
+    "from": "i",
+    "to": "eɪ",
+    "explain": "The first syllable is repeated to replace the following syllable. /i/ → [eɪ]."
+  },
+  {
+    "word": "cookie",
+    "target": "kʊki",
+    "child": "kʊkʊ",
+    "answer": "Reduplication",
+    "from": "i",
+    "to": "ʊ",
+    "explain": "The first syllable is repeated to replace the following syllable. /i/ → [ʊ]."
+  },
+  {
+    "word": "banana",
+    "target": "bəˈnænə",
+    "child": "ˈnænə",
+    "answer": "Weak Syllable Deletion",
+    "from": "bə",
+    "to": "",
+    "explain": "An unstressed syllable is omitted. /bə/ → [∅]."
+  },
+  {
+    "word": "potato",
+    "target": "pəˈteɪtoʊ",
+    "child": "ˈteɪtoʊ",
+    "answer": "Weak Syllable Deletion",
+    "from": "pə",
+    "to": "",
+    "explain": "An unstressed syllable is omitted. /pə/ → [∅]."
+  },
+  {
+    "word": "tomato",
+    "target": "təˈmeɪtoʊ",
+    "child": "ˈmeɪtoʊ",
+    "answer": "Weak Syllable Deletion",
+    "from": "tə",
+    "to": "",
+    "explain": "An unstressed syllable is omitted. /tə/ → [∅]."
+  },
+  {
+    "word": "balloon",
+    "target": "bəˈlun",
+    "child": "ˈlun",
+    "answer": "Weak Syllable Deletion",
+    "from": "bə",
+    "to": "",
+    "explain": "An unstressed syllable is omitted. /bə/ → [∅]."
+  },
+  {
+    "word": "giraffe",
+    "target": "dʒəˈɹæf",
+    "child": "ˈɹæf",
+    "answer": "Weak Syllable Deletion",
+    "from": "dʒə",
+    "to": "",
+    "explain": "An unstressed syllable is omitted. /dʒə/ → [∅]."
+  },
+  {
+    "word": "cup",
+    "target": "kʌp",
+    "child": "kʌ",
+    "answer": "Final Consonant Deletion",
+    "from": "p",
+    "to": "",
+    "explain": "The final consonant is omitted. /p/ → [∅]."
+  },
+  {
+    "word": "book",
+    "target": "bʊk",
+    "child": "bʊ",
+    "answer": "Final Consonant Deletion",
+    "from": "k",
+    "to": "",
+    "explain": "The final consonant is omitted. /k/ → [∅]."
+  },
+  {
+    "word": "bed",
+    "target": "bɛd",
+    "child": "bɛ",
+    "answer": "Final Consonant Deletion",
+    "from": "d",
+    "to": "",
+    "explain": "The final consonant is omitted. /d/ → [∅]."
+  },
+  {
+    "word": "nose",
+    "target": "noʊz",
+    "child": "noʊ",
+    "answer": "Final Consonant Deletion",
+    "from": "z",
+    "to": "",
+    "explain": "The final consonant is omitted. /z/ → [∅]."
+  },
+  {
+    "word": "map",
+    "target": "mæp",
+    "child": "mæ",
+    "answer": "Final Consonant Deletion",
+    "from": "p",
+    "to": "",
+    "explain": "The final consonant is omitted. /p/ → [∅]."
+  },
+  {
+    "word": "top",
+    "target": "tɑp",
+    "child": "pɑp",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "A consonant becomes labial like another consonant in the word. /t/ → [p]."
+  },
+  {
+    "word": "cap",
+    "target": "kæp",
+    "child": "pæp",
+    "answer": "Labial Assimilation",
+    "from": "k",
+    "to": "p",
+    "explain": "A consonant becomes labial like another consonant in the word. /k/ → [p]."
+  },
+  {
+    "word": "nap",
+    "target": "næp",
+    "child": "mæp",
+    "answer": "Labial Assimilation",
+    "from": "n",
+    "to": "m",
+    "explain": "A consonant becomes labial like another consonant in the word. /n/ → [m]."
+  },
+  {
+    "word": "tape",
+    "target": "teɪp",
+    "child": "peɪp",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "A consonant becomes labial like another consonant in the word. /t/ → [p]."
+  },
+  {
+    "word": "dime",
+    "target": "daɪm",
+    "child": "baɪm",
+    "answer": "Labial Assimilation",
+    "from": "d",
+    "to": "b",
+    "explain": "A consonant becomes labial like another consonant in the word. /d/ → [b]."
+  },
+  {
+    "word": "pot",
+    "target": "pɑt",
+    "child": "tɑt",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "A consonant becomes alveolar like another consonant in the word. /p/ → [t]."
+  },
+  {
+    "word": "bad",
+    "target": "bæd",
+    "child": "dæd",
+    "answer": "Alveolar Assimilation",
+    "from": "b",
+    "to": "d",
+    "explain": "A consonant becomes alveolar like another consonant in the word. /b/ → [d]."
+  },
+  {
+    "word": "pen",
+    "target": "pɛn",
+    "child": "tɛn",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "A consonant becomes alveolar like another consonant in the word. /p/ → [t]."
+  },
+  {
+    "word": "bun",
+    "target": "bʌn",
+    "child": "dʌn",
+    "answer": "Alveolar Assimilation",
+    "from": "b",
+    "to": "d",
+    "explain": "A consonant becomes alveolar like another consonant in the word. /b/ → [d]."
+  },
+  {
+    "word": "pet",
+    "target": "pɛt",
+    "child": "tɛt",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "A consonant becomes alveolar like another consonant in the word. /p/ → [t]."
+  },
+  {
+    "word": "take",
+    "target": "teɪk",
+    "child": "keɪk",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "A consonant becomes velar like another consonant in the word. /t/ → [k]."
+  },
+  {
+    "word": "tack",
+    "target": "tæk",
+    "child": "kæk",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "A consonant becomes velar like another consonant in the word. /t/ → [k]."
+  },
+  {
+    "word": "dog",
+    "target": "dɔɡ",
+    "child": "ɡɔɡ",
+    "answer": "Velar Assimilation",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "A consonant becomes velar like another consonant in the word. /d/ → [ɡ]."
+  },
+  {
+    "word": "dig",
+    "target": "dɪɡ",
+    "child": "ɡɪɡ",
+    "answer": "Velar Assimilation",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "A consonant becomes velar like another consonant in the word. /d/ → [ɡ]."
+  },
+  {
+    "word": "neck",
+    "target": "nɛk",
+    "child": "ŋɛk",
+    "answer": "Velar Assimilation",
+    "from": "n",
+    "to": "ŋ",
+    "explain": "A consonant becomes velar like another consonant in the word. /n/ → [ŋ]."
+  },
+  {
+    "word": "pie",
+    "target": "paɪ",
+    "child": "baɪ",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "A voiceless consonant before a vowel becomes voiced. /p/ → [b]."
+  },
+  {
+    "word": "two",
+    "target": "tu",
+    "child": "du",
+    "answer": "Prevocalic Voicing",
+    "from": "t",
+    "to": "d",
+    "explain": "A voiceless consonant before a vowel becomes voiced. /t/ → [d]."
+  },
+  {
+    "word": "coat",
+    "target": "koʊt",
+    "child": "ɡoʊt",
+    "answer": "Prevocalic Voicing",
+    "from": "k",
+    "to": "ɡ",
+    "explain": "A voiceless consonant before a vowel becomes voiced. /k/ → [ɡ]."
+  },
+  {
+    "word": "fan",
+    "target": "fæn",
+    "child": "væn",
+    "answer": "Prevocalic Voicing",
+    "from": "f",
+    "to": "v",
+    "explain": "A voiceless consonant before a vowel becomes voiced. /f/ → [v]."
+  },
+  {
+    "word": "sock",
+    "target": "sɑk",
+    "child": "zɑk",
+    "answer": "Prevocalic Voicing",
+    "from": "s",
+    "to": "z",
+    "explain": "A voiceless consonant before a vowel becomes voiced. /s/ → [z]."
+  },
+  {
+    "word": "cab",
+    "target": "kæb",
+    "child": "kæp",
+    "answer": "Devoicing",
+    "from": "b",
+    "to": "p",
+    "explain": "A voiced word-final consonant becomes voiceless. /b/ → [p]."
+  },
+  {
+    "word": "bag",
+    "target": "bæɡ",
+    "child": "bæk",
+    "answer": "Devoicing",
+    "from": "ɡ",
+    "to": "k",
+    "explain": "A voiced word-final consonant becomes voiceless. /ɡ/ → [k]."
+  },
+  {
+    "word": "bead",
+    "target": "bid",
+    "child": "bit",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "A voiced word-final consonant becomes voiceless. /d/ → [t]."
+  },
+  {
+    "word": "buzz",
+    "target": "bʌz",
+    "child": "bʌs",
+    "answer": "Devoicing",
+    "from": "z",
+    "to": "s",
+    "explain": "A voiced word-final consonant becomes voiceless. /z/ → [s]."
+  },
+  {
+    "word": "save",
+    "target": "seɪv",
+    "child": "seɪf",
+    "answer": "Devoicing",
+    "from": "v",
+    "to": "f",
+    "explain": "A voiced word-final consonant becomes voiceless. /v/ → [f]."
+  },
+  {
+    "word": "soap",
+    "target": "soʊp",
+    "child": "toʊp",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative /s/ is replaced with the stop [t]."
+  },
+  {
+    "word": "seal",
+    "target": "sil",
+    "child": "til",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative /s/ is replaced with the stop [t]."
+  },
+  {
+    "word": "soup",
+    "target": "sup",
+    "child": "tup",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative /s/ is replaced with the stop [t]."
+  },
+  {
+    "word": "sink",
+    "target": "sɪŋk",
+    "child": "tɪŋk",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative /s/ is replaced with the stop [t]."
+  },
+  {
+    "word": "sand",
+    "target": "sænd",
+    "child": "tænd",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative /s/ is replaced with the stop [t]."
+  },
+  {
+    "word": "face",
+    "target": "feɪs",
+    "child": "peɪs",
+    "answer": "Stopping",
+    "from": "f",
+    "to": "p",
+    "explain": "A fricative /f/ is replaced with the stop [p]."
+  },
+  {
+    "word": "feet",
+    "target": "fit",
+    "child": "pit",
+    "answer": "Stopping",
+    "from": "f",
+    "to": "p",
+    "explain": "A fricative /f/ is replaced with the stop [p]."
+  },
+  {
+    "word": "fox",
+    "target": "fɑks",
+    "child": "pɑks",
+    "answer": "Stopping",
+    "from": "f",
+    "to": "p",
+    "explain": "A fricative /f/ is replaced with the stop [p]."
+  },
+  {
+    "word": "fire",
+    "target": "faɪɚ",
+    "child": "paɪɚ",
+    "answer": "Stopping",
+    "from": "f",
+    "to": "p",
+    "explain": "A fricative /f/ is replaced with the stop [p]."
+  },
+  {
+    "word": "five",
+    "target": "faɪv",
+    "child": "paɪv",
+    "answer": "Stopping",
+    "from": "f",
+    "to": "p",
+    "explain": "A fricative /f/ is replaced with the stop [p]."
+  },
+  {
+    "word": "vine",
+    "target": "vaɪn",
+    "child": "baɪn",
+    "answer": "Stopping",
+    "from": "v",
+    "to": "b",
+    "explain": "A fricative /v/ is replaced with the stop [b]."
+  },
+  {
+    "word": "vest",
+    "target": "vɛst",
+    "child": "bɛst",
+    "answer": "Stopping",
+    "from": "v",
+    "to": "b",
+    "explain": "A fricative /v/ is replaced with the stop [b]."
+  },
+  {
+    "word": "zip",
+    "target": "zɪp",
+    "child": "dɪp",
+    "answer": "Stopping",
+    "from": "z",
+    "to": "d",
+    "explain": "A fricative /z/ is replaced with the stop [d]."
+  },
+  {
+    "word": "thin",
+    "target": "θɪn",
+    "child": "tɪn",
+    "answer": "Stopping",
+    "from": "θ",
+    "to": "t",
+    "explain": "A fricative /θ/ is replaced with the stop [t]."
+  },
+  {
+    "word": "chicken",
+    "target": "tʃɪkən",
+    "child": "ʃɪkən",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop portion and becomes [ʃ]."
+  },
+  {
+    "word": "chin",
+    "target": "tʃɪn",
+    "child": "ʃɪn",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop portion and becomes [ʃ]."
+  },
+  {
+    "word": "chip",
+    "target": "tʃɪp",
+    "child": "ʃɪp",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop portion and becomes [ʃ]."
+  },
+  {
+    "word": "chalk",
+    "target": "tʃɔk",
+    "child": "ʃɔk",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop portion and becomes [ʃ]."
+  },
+  {
+    "word": "chop",
+    "target": "tʃɑp",
+    "child": "ʃɑp",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop portion and becomes [ʃ]."
+  },
+  {
+    "word": "cherry",
+    "target": "tʃɛɹi",
+    "child": "ʃɛɹi",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop portion and becomes [ʃ]."
+  },
+  {
+    "word": "church",
+    "target": "tʃɝtʃ",
+    "child": "ʃɝtʃ",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop portion and becomes [ʃ]."
+  },
+  {
+    "word": "chase",
+    "target": "tʃeɪs",
+    "child": "ʃeɪs",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop portion and becomes [ʃ]."
+  },
+  {
+    "word": "check",
+    "target": "tʃɛk",
+    "child": "ʃɛk",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop portion and becomes [ʃ]."
+  },
+  {
+    "word": "chest",
+    "target": "tʃɛst",
+    "child": "ʃɛst",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop portion and becomes [ʃ]."
+  },
+  {
+    "word": "jelly",
+    "target": "dʒɛli",
+    "child": "ʒɛli",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop portion and becomes [ʒ]."
+  },
+  {
+    "word": "jacket",
+    "target": "dʒækət",
+    "child": "ʒækət",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop portion and becomes [ʒ]."
+  },
+  {
+    "word": "juice",
+    "target": "dʒus",
+    "child": "ʒus",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop portion and becomes [ʒ]."
+  },
+  {
+    "word": "jeep",
+    "target": "dʒip",
+    "child": "ʒip",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop portion and becomes [ʒ]."
+  },
+  {
+    "word": "king",
+    "target": "kɪŋ",
+    "child": "tɪŋ",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "The velar consonant /k/ moves forward to an alveolar place: [t]."
+  },
+  {
+    "word": "kite",
+    "target": "kaɪt",
+    "child": "taɪt",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "The velar consonant /k/ moves forward to an alveolar place: [t]."
+  },
+  {
+    "word": "cake",
+    "target": "keɪk",
+    "child": "teɪk",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "The velar consonant /k/ moves forward to an alveolar place: [t]."
+  },
+  {
+    "word": "go",
+    "target": "ɡoʊ",
+    "child": "doʊ",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "The velar consonant /ɡ/ moves forward to an alveolar place: [d]."
+  },
+  {
+    "word": "girl",
+    "target": "ɡɝl",
+    "child": "dɝl",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "The velar consonant /ɡ/ moves forward to an alveolar place: [d]."
+  },
+  {
+    "word": "gift",
+    "target": "ɡɪft",
+    "child": "dɪft",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "The velar consonant /ɡ/ moves forward to an alveolar place: [d]."
+  },
+  {
+    "word": "game",
+    "target": "ɡeɪm",
+    "child": "deɪm",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "The velar consonant /ɡ/ moves forward to an alveolar place: [d]."
+  },
+  {
+    "word": "gate",
+    "target": "ɡeɪt",
+    "child": "deɪt",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "The velar consonant /ɡ/ moves forward to an alveolar place: [d]."
+  },
+  {
+    "word": "car",
+    "target": "kɑɹ",
+    "child": "tɑɹ",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "The velar consonant /k/ moves forward to an alveolar place: [t]."
+  },
+  {
+    "word": "corn",
+    "target": "kɔɹn",
+    "child": "tɔɹn",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "The velar consonant /k/ moves forward to an alveolar place: [t]."
+  },
+  {
+    "word": "cash",
+    "target": "kæʃ",
+    "child": "tæʃ",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "The velar consonant /k/ moves forward to an alveolar place: [t]."
+  },
+  {
+    "word": "goal",
+    "target": "ɡoʊl",
+    "child": "doʊl",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "The velar consonant /ɡ/ moves forward to an alveolar place: [d]."
+  },
+  {
+    "word": "gold",
+    "target": "ɡoʊld",
+    "child": "doʊld",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "The velar consonant /ɡ/ moves forward to an alveolar place: [d]."
+  },
+  {
+    "word": "goose",
+    "target": "ɡus",
+    "child": "dus",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "The velar consonant /ɡ/ moves forward to an alveolar place: [d]."
+  },
+  {
+    "word": "shy",
+    "target": "ʃaɪ",
+    "child": "saɪ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "The postalveolar /ʃ/ changes to alveolar [s]."
+  },
+  {
+    "word": "shop",
+    "target": "ʃɑp",
+    "child": "sɑp",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "The postalveolar /ʃ/ changes to alveolar [s]."
+  },
+  {
+    "word": "shower",
+    "target": "ʃaʊɚ",
+    "child": "saʊɚ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "The postalveolar /ʃ/ changes to alveolar [s]."
+  },
+  {
+    "word": "shell",
+    "target": "ʃɛl",
+    "child": "sɛl",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "The postalveolar /ʃ/ changes to alveolar [s]."
+  },
+  {
+    "word": "shut",
+    "target": "ʃʌt",
+    "child": "sʌt",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "The postalveolar /ʃ/ changes to alveolar [s]."
+  },
+  {
+    "word": "shave",
+    "target": "ʃeɪv",
+    "child": "seɪv",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "The postalveolar /ʃ/ changes to alveolar [s]."
+  },
+  {
+    "word": "shiny",
+    "target": "ʃaɪni",
+    "child": "saɪni",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "The postalveolar /ʃ/ changes to alveolar [s]."
+  },
+  {
+    "word": "shirt",
+    "target": "ʃɝt",
+    "child": "sɝt",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "The postalveolar /ʃ/ changes to alveolar [s]."
+  },
+  {
+    "word": "short",
+    "target": "ʃɔɹt",
+    "child": "sɔɹt",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "The postalveolar /ʃ/ changes to alveolar [s]."
+  },
+  {
+    "word": "shake",
+    "target": "ʃeɪk",
+    "child": "seɪk",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "The postalveolar /ʃ/ changes to alveolar [s]."
+  },
+  {
+    "word": "shadow",
+    "target": "ʃædoʊ",
+    "child": "sædoʊ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "The postalveolar /ʃ/ changes to alveolar [s]."
+  },
+  {
+    "word": "shine",
+    "target": "ʃaɪn",
+    "child": "saɪn",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "The postalveolar /ʃ/ changes to alveolar [s]."
+  },
+  {
+    "word": "shout",
+    "target": "ʃaʊt",
+    "child": "saʊt",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "The postalveolar /ʃ/ changes to alveolar [s]."
+  },
+  {
+    "word": "time",
+    "target": "taɪm",
+    "child": "kaɪm",
+    "answer": "Backing",
+    "from": "t",
+    "to": "k",
+    "explain": "The alveolar consonant /t/ changes to velar [k]."
+  },
+  {
+    "word": "tub",
+    "target": "tʌb",
+    "child": "kʌb",
+    "answer": "Backing",
+    "from": "t",
+    "to": "k",
+    "explain": "The alveolar consonant /t/ changes to velar [k]."
+  },
+  {
+    "word": "tent",
+    "target": "tɛnt",
+    "child": "kɛnt",
+    "answer": "Backing",
+    "from": "t",
+    "to": "k",
+    "explain": "The alveolar consonant /t/ changes to velar [k]."
+  },
+  {
+    "word": "team",
+    "target": "tim",
+    "child": "kim",
+    "answer": "Backing",
+    "from": "t",
+    "to": "k",
+    "explain": "The alveolar consonant /t/ changes to velar [k]."
+  },
+  {
+    "word": "tail",
+    "target": "teɪl",
+    "child": "keɪl",
+    "answer": "Backing",
+    "from": "t",
+    "to": "k",
+    "explain": "The alveolar consonant /t/ changes to velar [k]."
+  },
+  {
+    "word": "tie",
+    "target": "taɪ",
+    "child": "kaɪ",
+    "answer": "Backing",
+    "from": "t",
+    "to": "k",
+    "explain": "The alveolar consonant /t/ changes to velar [k]."
+  },
+  {
+    "word": "toy",
+    "target": "tɔɪ",
+    "child": "kɔɪ",
+    "answer": "Backing",
+    "from": "t",
+    "to": "k",
+    "explain": "The alveolar consonant /t/ changes to velar [k]."
+  },
+  {
+    "word": "town",
+    "target": "taʊn",
+    "child": "kaʊn",
+    "answer": "Backing",
+    "from": "t",
+    "to": "k",
+    "explain": "The alveolar consonant /t/ changes to velar [k]."
+  },
+  {
+    "word": "doll",
+    "target": "dɑl",
+    "child": "ɡɑl",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "The alveolar consonant /d/ changes to velar [ɡ]."
+  },
+  {
+    "word": "daisy",
+    "target": "deɪzi",
+    "child": "ɡeɪzi",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "The alveolar consonant /d/ changes to velar [ɡ]."
+  },
+  {
+    "word": "dinner",
+    "target": "dɪnɚ",
+    "child": "ɡɪnɚ",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "The alveolar consonant /d/ changes to velar [ɡ]."
+  },
+  {
+    "word": "nine",
+    "target": "naɪn",
+    "child": "ŋaɪn",
+    "answer": "Backing",
+    "from": "n",
+    "to": "ŋ",
+    "explain": "The alveolar consonant /n/ changes to velar [ŋ]."
+  },
+  {
+    "word": "new",
+    "target": "nu",
+    "child": "ŋu",
+    "answer": "Backing",
+    "from": "n",
+    "to": "ŋ",
+    "explain": "The alveolar consonant /n/ changes to velar [ŋ]."
+  },
+  {
+    "word": "night",
+    "target": "naɪt",
+    "child": "ŋaɪt",
+    "answer": "Backing",
+    "from": "n",
+    "to": "ŋ",
+    "explain": "The alveolar consonant /n/ changes to velar [ŋ]."
+  },
+  {
+    "word": "rock",
+    "target": "ɹɑk",
+    "child": "wɑk",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ becomes the glide [w]."
+  },
+  {
+    "word": "road",
+    "target": "ɹoʊd",
+    "child": "woʊd",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ becomes the glide [w]."
+  },
+  {
+    "word": "rose",
+    "target": "ɹoʊz",
+    "child": "woʊz",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ becomes the glide [w]."
+  },
+  {
+    "word": "rice",
+    "target": "ɹaɪs",
+    "child": "waɪs",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ becomes the glide [w]."
+  },
+  {
+    "word": "ring",
+    "target": "ɹɪŋ",
+    "child": "wɪŋ",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ becomes the glide [w]."
+  },
+  {
+    "word": "run",
+    "target": "ɹʌn",
+    "child": "wʌn",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ becomes the glide [w]."
+  },
+  {
+    "word": "room",
+    "target": "ɹum",
+    "child": "wum",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ becomes the glide [w]."
+  },
+  {
+    "word": "rug",
+    "target": "ɹʌɡ",
+    "child": "wʌɡ",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ becomes the glide [w]."
+  },
+  {
+    "word": "rake",
+    "target": "ɹeɪk",
+    "child": "weɪk",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ becomes the glide [w]."
+  },
+  {
+    "word": "roll",
+    "target": "ɹoʊl",
+    "child": "woʊl",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ becomes the glide [w]."
+  },
+  {
+    "word": "light",
+    "target": "laɪt",
+    "child": "waɪt",
+    "answer": "Gliding",
+    "from": "l",
+    "to": "w",
+    "explain": "The liquid /l/ becomes the glide [w]."
+  },
+  {
+    "word": "lamb",
+    "target": "læm",
+    "child": "wæm",
+    "answer": "Gliding",
+    "from": "l",
+    "to": "w",
+    "explain": "The liquid /l/ becomes the glide [w]."
+  },
+  {
+    "word": "lion",
+    "target": "laɪən",
+    "child": "waɪən",
+    "answer": "Gliding",
+    "from": "l",
+    "to": "w",
+    "explain": "The liquid /l/ becomes the glide [w]."
+  },
+  {
+    "word": "lake",
+    "target": "leɪk",
+    "child": "weɪk",
+    "answer": "Gliding",
+    "from": "l",
+    "to": "w",
+    "explain": "The liquid /l/ becomes the glide [w]."
+  },
+  {
+    "word": "ball",
+    "target": "bɔl",
+    "child": "bɔʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The coda liquid /l/ is realized as a vowel-like [ʊ]."
+  },
+  {
+    "word": "bell",
+    "target": "bɛl",
+    "child": "bɛʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The coda liquid /l/ is realized as a vowel-like [ʊ]."
+  },
+  {
+    "word": "fill",
+    "target": "fɪl",
+    "child": "fɪʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The coda liquid /l/ is realized as a vowel-like [ʊ]."
+  },
+  {
+    "word": "hill",
+    "target": "hɪl",
+    "child": "hɪʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The coda liquid /l/ is realized as a vowel-like [ʊ]."
+  },
+  {
+    "word": "pill",
+    "target": "pɪl",
+    "child": "pɪʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The coda liquid /l/ is realized as a vowel-like [ʊ]."
+  },
+  {
+    "word": "tall",
+    "target": "tɔl",
+    "child": "tɔʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The coda liquid /l/ is realized as a vowel-like [ʊ]."
+  },
+  {
+    "word": "wall",
+    "target": "wɔl",
+    "child": "wɔʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The coda liquid /l/ is realized as a vowel-like [ʊ]."
+  },
+  {
+    "word": "call",
+    "target": "kɔl",
+    "child": "kɔʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The coda liquid /l/ is realized as a vowel-like [ʊ]."
+  },
+  {
+    "word": "fall",
+    "target": "fɔl",
+    "child": "fɔʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The coda liquid /l/ is realized as a vowel-like [ʊ]."
+  },
+  {
+    "word": "wheel",
+    "target": "wil",
+    "child": "wiʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The coda liquid /l/ is realized as a vowel-like [ʊ]."
+  },
+  {
+    "word": "mail",
+    "target": "meɪl",
+    "child": "meɪʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The coda liquid /l/ is realized as a vowel-like [ʊ]."
+  },
+  {
+    "word": "pool",
+    "target": "pul",
+    "child": "puʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The coda liquid /l/ is realized as a vowel-like [ʊ]."
+  },
+  {
+    "word": "cool",
+    "target": "kul",
+    "child": "kuʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The coda liquid /l/ is realized as a vowel-like [ʊ]."
+  },
+  {
+    "word": "snake",
+    "target": "sneɪk",
+    "child": "neɪk",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The consonant /s/ is omitted from an initial cluster."
+  },
+  {
+    "word": "snow",
+    "target": "snoʊ",
+    "child": "noʊ",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The consonant /s/ is omitted from an initial cluster."
+  },
+  {
+    "word": "smile",
+    "target": "smaɪl",
+    "child": "maɪl",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The consonant /s/ is omitted from an initial cluster."
+  },
+  {
+    "word": "small",
+    "target": "smɔl",
+    "child": "mɔl",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The consonant /s/ is omitted from an initial cluster."
+  },
+  {
+    "word": "sleep",
+    "target": "slip",
+    "child": "lip",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The consonant /s/ is omitted from an initial cluster."
+  },
+  {
+    "word": "slide",
+    "target": "slaɪd",
+    "child": "laɪd",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The consonant /s/ is omitted from an initial cluster."
+  },
+  {
+    "word": "slow",
+    "target": "sloʊ",
+    "child": "loʊ",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The consonant /s/ is omitted from an initial cluster."
+  },
+  {
+    "word": "skin",
+    "target": "skɪn",
+    "child": "kɪn",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The consonant /s/ is omitted from an initial cluster."
+  },
+  {
+    "word": "skip",
+    "target": "skɪp",
+    "child": "kɪp",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The consonant /s/ is omitted from an initial cluster."
+  },
+  {
+    "word": "sky",
+    "target": "skaɪ",
+    "child": "kaɪ",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The consonant /s/ is omitted from an initial cluster."
+  },
+  {
+    "word": "spin",
+    "target": "spɪn",
+    "child": "pɪn",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The consonant /s/ is omitted from an initial cluster."
+  },
+  {
+    "word": "spot",
+    "target": "spɑt",
+    "child": "pɑt",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The consonant /s/ is omitted from an initial cluster."
+  },
+  {
+    "word": "plane",
+    "target": "pleɪn",
+    "child": "peɪn",
+    "answer": "Cluster Reduction",
+    "from": "l",
+    "to": "",
+    "explain": "The consonant /l/ is omitted from an initial cluster."
+  },
+  {
+    "word": "drum",
+    "target": "dɹʌm",
+    "child": "dʌm",
+    "answer": "Cluster Reduction",
+    "from": "ɹ",
+    "to": "",
+    "explain": "The consonant /ɹ/ is omitted from an initial cluster."
+  },
+  {
+    "word": "bunny",
+    "target": "bʌni",
+    "child": "bʌbʌ",
+    "answer": "Reduplication",
+    "from": "ni",
+    "to": "bʌ",
+    "explain": "The second syllable is replaced with a copy of the first syllable."
+  },
+  {
+    "word": "puppy",
+    "target": "pʌpi",
+    "child": "pʌpʌ",
+    "answer": "Reduplication",
+    "from": "pi",
+    "to": "pʌ",
+    "explain": "The second syllable is replaced with a copy of the first syllable."
+  },
+  {
+    "word": "mommy",
+    "target": "mɑmi",
+    "child": "mɑmɑ",
+    "answer": "Reduplication",
+    "from": "mi",
+    "to": "mɑ",
+    "explain": "The second syllable is replaced with a copy of the first syllable."
+  },
+  {
+    "word": "daddy",
+    "target": "dædi",
+    "child": "dædæ",
+    "answer": "Reduplication",
+    "from": "di",
+    "to": "dæ",
+    "explain": "The second syllable is replaced with a copy of the first syllable."
+  },
+  {
+    "word": "kitty",
+    "target": "kɪti",
+    "child": "kɪkɪ",
+    "answer": "Reduplication",
+    "from": "ti",
+    "to": "kɪ",
+    "explain": "The second syllable is replaced with a copy of the first syllable."
+  },
+  {
+    "word": "doggy",
+    "target": "dɔɡi",
+    "child": "dɔdɔ",
+    "answer": "Reduplication",
+    "from": "ɡi",
+    "to": "dɔ",
+    "explain": "The second syllable is replaced with a copy of the first syllable."
+  },
+  {
+    "word": "teddy",
+    "target": "tɛdi",
+    "child": "tɛtɛ",
+    "answer": "Reduplication",
+    "from": "di",
+    "to": "tɛ",
+    "explain": "The second syllable is replaced with a copy of the first syllable."
+  },
+  {
+    "word": "happy",
+    "target": "hæpi",
+    "child": "hæhæ",
+    "answer": "Reduplication",
+    "from": "pi",
+    "to": "hæ",
+    "explain": "The second syllable is replaced with a copy of the first syllable."
+  },
+  {
+    "word": "coffee",
+    "target": "kɔfi",
+    "child": "kɔkɔ",
+    "answer": "Reduplication",
+    "from": "fi",
+    "to": "kɔ",
+    "explain": "The second syllable is replaced with a copy of the first syllable."
+  },
+  {
+    "word": "money",
+    "target": "mʌni",
+    "child": "mʌmʌ",
+    "answer": "Reduplication",
+    "from": "ni",
+    "to": "mʌ",
+    "explain": "The second syllable is replaced with a copy of the first syllable."
+  },
+  {
+    "word": "pony",
+    "target": "poʊni",
+    "child": "poʊpoʊ",
+    "answer": "Reduplication",
+    "from": "ni",
+    "to": "poʊ",
+    "explain": "The second syllable is replaced with a copy of the first syllable."
+  },
+  {
+    "word": "noodle",
+    "target": "nudəl",
+    "child": "nunu",
+    "answer": "Reduplication",
+    "from": "dəl",
+    "to": "nu",
+    "explain": "The second syllable is replaced with a copy of the first syllable."
+  },
+  {
+    "word": "button",
+    "target": "bʌtən",
+    "child": "bʌbʌ",
+    "answer": "Reduplication",
+    "from": "tən",
+    "to": "bʌ",
+    "explain": "The second syllable is replaced with a copy of the first syllable."
+  },
+  {
+    "word": "guitar",
+    "target": "ɡəˈtɑɹ",
+    "child": "ˈtɑɹ",
+    "answer": "Weak Syllable Deletion",
+    "from": "ɡə",
+    "to": "",
+    "explain": "The unstressed syllable /ɡə/ is omitted."
+  },
+  {
+    "word": "pajamas",
+    "target": "pəˈdʒɑməz",
+    "child": "ˈdʒɑməz",
+    "answer": "Weak Syllable Deletion",
+    "from": "pə",
+    "to": "",
+    "explain": "The unstressed syllable /pə/ is omitted."
+  },
+  {
+    "word": "canoe",
+    "target": "kəˈnu",
+    "child": "ˈnu",
+    "answer": "Weak Syllable Deletion",
+    "from": "kə",
+    "to": "",
+    "explain": "The unstressed syllable /kə/ is omitted."
+  },
+  {
+    "word": "today",
+    "target": "təˈdeɪ",
+    "child": "ˈdeɪ",
+    "answer": "Weak Syllable Deletion",
+    "from": "tə",
+    "to": "",
+    "explain": "The unstressed syllable /tə/ is omitted."
+  },
+  {
+    "word": "tomorrow",
+    "target": "təˈmɑɹoʊ",
+    "child": "ˈmɑɹoʊ",
+    "answer": "Weak Syllable Deletion",
+    "from": "tə",
+    "to": "",
+    "explain": "The unstressed syllable /tə/ is omitted."
+  },
+  {
+    "word": "before",
+    "target": "bəˈfɔɹ",
+    "child": "ˈfɔɹ",
+    "answer": "Weak Syllable Deletion",
+    "from": "bə",
+    "to": "",
+    "explain": "The unstressed syllable /bə/ is omitted."
+  },
+  {
+    "word": "beside",
+    "target": "bəˈsaɪd",
+    "child": "ˈsaɪd",
+    "answer": "Weak Syllable Deletion",
+    "from": "bə",
+    "to": "",
+    "explain": "The unstressed syllable /bə/ is omitted."
+  },
+  {
+    "word": "behind",
+    "target": "bəˈhaɪnd",
+    "child": "ˈhaɪnd",
+    "answer": "Weak Syllable Deletion",
+    "from": "bə",
+    "to": "",
+    "explain": "The unstressed syllable /bə/ is omitted."
+  },
+  {
+    "word": "above",
+    "target": "əˈbʌv",
+    "child": "ˈbʌv",
+    "answer": "Weak Syllable Deletion",
+    "from": "ə",
+    "to": "",
+    "explain": "The unstressed syllable /ə/ is omitted."
+  },
+  {
+    "word": "around",
+    "target": "əˈɹaʊnd",
+    "child": "ˈɹaʊnd",
+    "answer": "Weak Syllable Deletion",
+    "from": "ə",
+    "to": "",
+    "explain": "The unstressed syllable /ə/ is omitted."
+  },
+  {
+    "word": "alone",
+    "target": "əˈloʊn",
+    "child": "ˈloʊn",
+    "answer": "Weak Syllable Deletion",
+    "from": "ə",
+    "to": "",
+    "explain": "The unstressed syllable /ə/ is omitted."
+  },
+  {
+    "word": "awake",
+    "target": "əˈweɪk",
+    "child": "ˈweɪk",
+    "answer": "Weak Syllable Deletion",
+    "from": "ə",
+    "to": "",
+    "explain": "The unstressed syllable /ə/ is omitted."
+  },
+  {
+    "word": "asleep",
+    "target": "əˈslip",
+    "child": "ˈslip",
+    "answer": "Weak Syllable Deletion",
+    "from": "ə",
+    "to": "",
+    "explain": "The unstressed syllable /ə/ is omitted."
+  },
+  {
+    "word": "hat",
+    "target": "hæt",
+    "child": "hæ",
+    "answer": "Final Consonant Deletion",
+    "from": "t",
+    "to": "",
+    "explain": "The final consonant /t/ is omitted."
+  },
+  {
+    "word": "bat",
+    "target": "bæt",
+    "child": "bæ",
+    "answer": "Final Consonant Deletion",
+    "from": "t",
+    "to": "",
+    "explain": "The final consonant /t/ is omitted."
+  },
+  {
+    "word": "rat",
+    "target": "ɹæt",
+    "child": "ɹæ",
+    "answer": "Final Consonant Deletion",
+    "from": "t",
+    "to": "",
+    "explain": "The final consonant /t/ is omitted."
+  },
+  {
+    "word": "mat",
+    "target": "mæt",
+    "child": "mæ",
+    "answer": "Final Consonant Deletion",
+    "from": "t",
+    "to": "",
+    "explain": "The final consonant /t/ is omitted."
+  },
+  {
+    "word": "boat",
+    "target": "boʊt",
+    "child": "boʊ",
+    "answer": "Final Consonant Deletion",
+    "from": "t",
+    "to": "",
+    "explain": "The final consonant /t/ is omitted."
+  },
+  {
+    "word": "home",
+    "target": "hoʊm",
+    "child": "hoʊ",
+    "answer": "Final Consonant Deletion",
+    "from": "m",
+    "to": "",
+    "explain": "The final consonant /m/ is omitted."
+  },
+  {
+    "word": "phone",
+    "target": "foʊn",
+    "child": "foʊ",
+    "answer": "Final Consonant Deletion",
+    "from": "n",
+    "to": "",
+    "explain": "The final consonant /n/ is omitted."
+  },
+  {
+    "word": "moon",
+    "target": "mun",
+    "child": "mu",
+    "answer": "Final Consonant Deletion",
+    "from": "n",
+    "to": "",
+    "explain": "The final consonant /n/ is omitted."
+  },
+  {
+    "word": "man",
+    "target": "mæn",
+    "child": "mæ",
+    "answer": "Final Consonant Deletion",
+    "from": "n",
+    "to": "",
+    "explain": "The final consonant /n/ is omitted."
+  },
+  {
+    "word": "pin",
+    "target": "pɪn",
+    "child": "pɪ",
+    "answer": "Final Consonant Deletion",
+    "from": "n",
+    "to": "",
+    "explain": "The final consonant /n/ is omitted."
+  },
+  {
+    "word": "bus",
+    "target": "bʌs",
+    "child": "bʌ",
+    "answer": "Final Consonant Deletion",
+    "from": "s",
+    "to": "",
+    "explain": "The final consonant /s/ is omitted."
+  },
+  {
+    "word": "mess",
+    "target": "mɛs",
+    "child": "mɛ",
+    "answer": "Final Consonant Deletion",
+    "from": "s",
+    "to": "",
+    "explain": "The final consonant /s/ is omitted."
+  },
+  {
+    "word": "roof",
+    "target": "ɹuf",
+    "child": "ɹu",
+    "answer": "Final Consonant Deletion",
+    "from": "f",
+    "to": "",
+    "explain": "The final consonant /f/ is omitted."
+  },
+  {
+    "word": "pig",
+    "target": "pɪɡ",
+    "child": "pɪ",
+    "answer": "Final Consonant Deletion",
+    "from": "ɡ",
+    "to": "",
+    "explain": "The final consonant /ɡ/ is omitted."
+  },
+  {
+    "word": "tip",
+    "target": "tɪp",
+    "child": "pɪp",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "A nonlabial consonant /t/ assimilates in place to a later labial sound, becoming [p]."
+  },
+  {
+    "word": "tap",
+    "target": "tæp",
+    "child": "pæp",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "A nonlabial consonant /t/ assimilates in place to a later labial sound, becoming [p]."
+  },
+  {
+    "word": "type",
+    "target": "taɪp",
+    "child": "paɪp",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "A nonlabial consonant /t/ assimilates in place to a later labial sound, becoming [p]."
+  },
+  {
+    "word": "tame",
+    "target": "teɪm",
+    "child": "peɪm",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "A nonlabial consonant /t/ assimilates in place to a later labial sound, becoming [p]."
+  },
+  {
+    "word": "tomb",
+    "target": "tum",
+    "child": "pum",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "A nonlabial consonant /t/ assimilates in place to a later labial sound, becoming [p]."
+  },
+  {
+    "word": "dome",
+    "target": "doʊm",
+    "child": "boʊm",
+    "answer": "Labial Assimilation",
+    "from": "d",
+    "to": "b",
+    "explain": "A nonlabial consonant /d/ assimilates in place to a later labial sound, becoming [b]."
+  },
+  {
+    "word": "damp",
+    "target": "dæmp",
+    "child": "bæmp",
+    "answer": "Labial Assimilation",
+    "from": "d",
+    "to": "b",
+    "explain": "A nonlabial consonant /d/ assimilates in place to a later labial sound, becoming [b]."
+  },
+  {
+    "word": "dump",
+    "target": "dʌmp",
+    "child": "bʌmp",
+    "answer": "Labial Assimilation",
+    "from": "d",
+    "to": "b",
+    "explain": "A nonlabial consonant /d/ assimilates in place to a later labial sound, becoming [b]."
+  },
+  {
+    "word": "dip",
+    "target": "dɪp",
+    "child": "bɪp",
+    "answer": "Labial Assimilation",
+    "from": "d",
+    "to": "b",
+    "explain": "A nonlabial consonant /d/ assimilates in place to a later labial sound, becoming [b]."
+  },
+  {
+    "word": "deep",
+    "target": "dip",
+    "child": "bip",
+    "answer": "Labial Assimilation",
+    "from": "d",
+    "to": "b",
+    "explain": "A nonlabial consonant /d/ assimilates in place to a later labial sound, becoming [b]."
+  },
+  {
+    "word": "keep",
+    "target": "kip",
+    "child": "pip",
+    "answer": "Labial Assimilation",
+    "from": "k",
+    "to": "p",
+    "explain": "A nonlabial consonant /k/ assimilates in place to a later labial sound, becoming [p]."
+  },
+  {
+    "word": "camp",
+    "target": "kæmp",
+    "child": "pæmp",
+    "answer": "Labial Assimilation",
+    "from": "k",
+    "to": "p",
+    "explain": "A nonlabial consonant /k/ assimilates in place to a later labial sound, becoming [p]."
+  },
+  {
+    "word": "comb",
+    "target": "koʊm",
+    "child": "poʊm",
+    "answer": "Labial Assimilation",
+    "from": "k",
+    "to": "p",
+    "explain": "A nonlabial consonant /k/ assimilates in place to a later labial sound, becoming [p]."
+  },
+  {
+    "word": "knob",
+    "target": "nɑb",
+    "child": "mɑb",
+    "answer": "Labial Assimilation",
+    "from": "n",
+    "to": "m",
+    "explain": "A nonlabial consonant /n/ assimilates in place to a later labial sound, becoming [m]."
+  },
+  {
+    "word": "pat",
+    "target": "pæt",
+    "child": "tæt",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "A consonant /p/ assimilates in place to a later alveolar sound, becoming [t]."
+  },
+  {
+    "word": "pit",
+    "target": "pɪt",
+    "child": "tɪt",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "A consonant /p/ assimilates in place to a later alveolar sound, becoming [t]."
+  },
+  {
+    "word": "put",
+    "target": "pʊt",
+    "child": "tʊt",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "A consonant /p/ assimilates in place to a later alveolar sound, becoming [t]."
+  },
+  {
+    "word": "pan",
+    "target": "pæn",
+    "child": "tæn",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "A consonant /p/ assimilates in place to a later alveolar sound, becoming [t]."
+  },
+  {
+    "word": "pad",
+    "target": "pæd",
+    "child": "tæd",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "A consonant /p/ assimilates in place to a later alveolar sound, becoming [t]."
+  },
+  {
+    "word": "bid",
+    "target": "bɪd",
+    "child": "dɪd",
+    "answer": "Alveolar Assimilation",
+    "from": "b",
+    "to": "d",
+    "explain": "A consonant /b/ assimilates in place to a later alveolar sound, becoming [d]."
+  },
+  {
+    "word": "bit",
+    "target": "bɪt",
+    "child": "dɪt",
+    "answer": "Alveolar Assimilation",
+    "from": "b",
+    "to": "d",
+    "explain": "A consonant /b/ assimilates in place to a later alveolar sound, becoming [d]."
+  },
+  {
+    "word": "ban",
+    "target": "bæn",
+    "child": "dæn",
+    "answer": "Alveolar Assimilation",
+    "from": "b",
+    "to": "d",
+    "explain": "A consonant /b/ assimilates in place to a later alveolar sound, becoming [d]."
+  },
+  {
+    "word": "can",
+    "target": "kæn",
+    "child": "tæn",
+    "answer": "Alveolar Assimilation",
+    "from": "k",
+    "to": "t",
+    "explain": "A consonant /k/ assimilates in place to a later alveolar sound, becoming [t]."
+  },
+  {
+    "word": "cut",
+    "target": "kʌt",
+    "child": "tʌt",
+    "answer": "Alveolar Assimilation",
+    "from": "k",
+    "to": "t",
+    "explain": "A consonant /k/ assimilates in place to a later alveolar sound, becoming [t]."
+  },
+  {
+    "word": "kid",
+    "target": "kɪd",
+    "child": "tɪd",
+    "answer": "Alveolar Assimilation",
+    "from": "k",
+    "to": "t",
+    "explain": "A consonant /k/ assimilates in place to a later alveolar sound, becoming [t]."
+  },
+  {
+    "word": "gun",
+    "target": "ɡʌn",
+    "child": "dʌn",
+    "answer": "Alveolar Assimilation",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "A consonant /ɡ/ assimilates in place to a later alveolar sound, becoming [d]."
+  },
+  {
+    "word": "good",
+    "target": "ɡʊd",
+    "child": "dʊd",
+    "answer": "Alveolar Assimilation",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "A consonant /ɡ/ assimilates in place to a later alveolar sound, becoming [d]."
+  },
+  {
+    "word": "kin",
+    "target": "kɪn",
+    "child": "tɪn",
+    "answer": "Alveolar Assimilation",
+    "from": "k",
+    "to": "t",
+    "explain": "A consonant /k/ assimilates in place to a later alveolar sound, becoming [t]."
+  },
+  {
+    "word": "tick",
+    "target": "tɪk",
+    "child": "kɪk",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "A consonant /t/ assimilates in place to a later velar sound, becoming [k]."
+  },
+  {
+    "word": "tuck",
+    "target": "tʌk",
+    "child": "kʌk",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "A consonant /t/ assimilates in place to a later velar sound, becoming [k]."
+  },
+  {
+    "word": "talk",
+    "target": "tɔk",
+    "child": "kɔk",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "A consonant /t/ assimilates in place to a later velar sound, becoming [k]."
+  },
+  {
+    "word": "took",
+    "target": "tʊk",
+    "child": "kʊk",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "A consonant /t/ assimilates in place to a later velar sound, becoming [k]."
+  },
+  {
+    "word": "tag",
+    "target": "tæɡ",
+    "child": "kæɡ",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "A consonant /t/ assimilates in place to a later velar sound, becoming [k]."
+  },
+  {
+    "word": "tug",
+    "target": "tʌɡ",
+    "child": "kʌɡ",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "A consonant /t/ assimilates in place to a later velar sound, becoming [k]."
+  },
+  {
+    "word": "dug",
+    "target": "dʌɡ",
+    "child": "ɡʌɡ",
+    "answer": "Velar Assimilation",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "A consonant /d/ assimilates in place to a later velar sound, becoming [ɡ]."
+  },
+  {
+    "word": "dock",
+    "target": "dɑk",
+    "child": "ɡɑk",
+    "answer": "Velar Assimilation",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "A consonant /d/ assimilates in place to a later velar sound, becoming [ɡ]."
+  },
+  {
+    "word": "deck",
+    "target": "dɛk",
+    "child": "ɡɛk",
+    "answer": "Velar Assimilation",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "A consonant /d/ assimilates in place to a later velar sound, becoming [ɡ]."
+  },
+  {
+    "word": "dunk",
+    "target": "dʌŋk",
+    "child": "ɡʌŋk",
+    "answer": "Velar Assimilation",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "A consonant /d/ assimilates in place to a later velar sound, becoming [ɡ]."
+  },
+  {
+    "word": "nuke",
+    "target": "nuk",
+    "child": "ŋuk",
+    "answer": "Velar Assimilation",
+    "from": "n",
+    "to": "ŋ",
+    "explain": "A consonant /n/ assimilates in place to a later velar sound, becoming [ŋ]."
+  },
+  {
+    "word": "knock",
+    "target": "nɑk",
+    "child": "ŋɑk",
+    "answer": "Velar Assimilation",
+    "from": "n",
+    "to": "ŋ",
+    "explain": "A consonant /n/ assimilates in place to a later velar sound, becoming [ŋ]."
+  },
+  {
+    "word": "nag",
+    "target": "næɡ",
+    "child": "ŋæɡ",
+    "answer": "Velar Assimilation",
+    "from": "n",
+    "to": "ŋ",
+    "explain": "A consonant /n/ assimilates in place to a later velar sound, becoming [ŋ]."
+  },
+  {
+    "word": "tongue",
+    "target": "tʌŋ",
+    "child": "kʌŋ",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "A consonant /t/ assimilates in place to a later velar sound, becoming [k]."
+  },
+  {
+    "word": "pea",
+    "target": "pi",
+    "child": "bi",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "Initial voiceless /p/ is voiced before a vowel, becoming [b]."
+  },
+  {
+    "word": "pass",
+    "target": "pæs",
+    "child": "bæs",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "Initial voiceless /p/ is voiced before a vowel, becoming [b]."
+  },
+  {
+    "word": "pear",
+    "target": "pɛɹ",
+    "child": "bɛɹ",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "Initial voiceless /p/ is voiced before a vowel, becoming [b]."
+  },
+  {
+    "word": "pink",
+    "target": "pɪŋk",
+    "child": "bɪŋk",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "Initial voiceless /p/ is voiced before a vowel, becoming [b]."
+  },
+  {
+    "word": "ten",
+    "target": "tɛn",
+    "child": "dɛn",
+    "answer": "Prevocalic Voicing",
+    "from": "t",
+    "to": "d",
+    "explain": "Initial voiceless /t/ is voiced before a vowel, becoming [d]."
+  },
+  {
+    "word": "tell",
+    "target": "tɛl",
+    "child": "dɛl",
+    "answer": "Prevocalic Voicing",
+    "from": "t",
+    "to": "d",
+    "explain": "Initial voiceless /t/ is voiced before a vowel, becoming [d]."
+  },
+  {
+    "word": "cough",
+    "target": "kɔf",
+    "child": "ɡɔf",
+    "answer": "Prevocalic Voicing",
+    "from": "k",
+    "to": "ɡ",
+    "explain": "Initial voiceless /k/ is voiced before a vowel, becoming [ɡ]."
+  },
+  {
+    "word": "kill",
+    "target": "kɪl",
+    "child": "ɡɪl",
+    "answer": "Prevocalic Voicing",
+    "from": "k",
+    "to": "ɡ",
+    "explain": "Initial voiceless /k/ is voiced before a vowel, becoming [ɡ]."
+  },
+  {
+    "word": "kind",
+    "target": "kaɪnd",
+    "child": "ɡaɪnd",
+    "answer": "Prevocalic Voicing",
+    "from": "k",
+    "to": "ɡ",
+    "explain": "Initial voiceless /k/ is voiced before a vowel, becoming [ɡ]."
+  },
+  {
+    "word": "fat",
+    "target": "fæt",
+    "child": "væt",
+    "answer": "Prevocalic Voicing",
+    "from": "f",
+    "to": "v",
+    "explain": "Initial voiceless /f/ is voiced before a vowel, becoming [v]."
+  },
+  {
+    "word": "fine",
+    "target": "faɪn",
+    "child": "vaɪn",
+    "answer": "Prevocalic Voicing",
+    "from": "f",
+    "to": "v",
+    "explain": "Initial voiceless /f/ is voiced before a vowel, becoming [v]."
+  },
+  {
+    "word": "sad",
+    "target": "sæd",
+    "child": "zæd",
+    "answer": "Prevocalic Voicing",
+    "from": "s",
+    "to": "z",
+    "explain": "Initial voiceless /s/ is voiced before a vowel, becoming [z]."
+  },
+  {
+    "word": "seat",
+    "target": "sit",
+    "child": "zit",
+    "answer": "Prevocalic Voicing",
+    "from": "s",
+    "to": "z",
+    "explain": "Initial voiceless /s/ is voiced before a vowel, becoming [z]."
+  },
+  {
+    "word": "sea",
+    "target": "si",
+    "child": "zi",
+    "answer": "Prevocalic Voicing",
+    "from": "s",
+    "to": "z",
+    "explain": "Initial voiceless /s/ is voiced before a vowel, becoming [z]."
+  },
+  {
+    "word": "rib",
+    "target": "ɹɪb",
+    "child": "ɹɪp",
+    "answer": "Devoicing",
+    "from": "b",
+    "to": "p",
+    "explain": "A final voiced consonant /b/ becomes voiceless [p]."
+  },
+  {
+    "word": "web",
+    "target": "wɛb",
+    "child": "wɛp",
+    "answer": "Devoicing",
+    "from": "b",
+    "to": "p",
+    "explain": "A final voiced consonant /b/ becomes voiceless [p]."
+  },
+  {
+    "word": "crab",
+    "target": "kɹæb",
+    "child": "kɹæp",
+    "answer": "Devoicing",
+    "from": "b",
+    "to": "p",
+    "explain": "A final voiced consonant /b/ becomes voiceless [p]."
+  },
+  {
+    "word": "rob",
+    "target": "ɹɑb",
+    "child": "ɹɑp",
+    "answer": "Devoicing",
+    "from": "b",
+    "to": "p",
+    "explain": "A final voiced consonant /b/ becomes voiceless [p]."
+  },
+  {
+    "word": "rod",
+    "target": "ɹɑd",
+    "child": "ɹɑt",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "A final voiced consonant /d/ becomes voiceless [t]."
+  },
+  {
+    "word": "mud",
+    "target": "mʌd",
+    "child": "mʌt",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "A final voiced consonant /d/ becomes voiceless [t]."
+  },
+  {
+    "word": "seed",
+    "target": "sid",
+    "child": "sit",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "A final voiced consonant /d/ becomes voiceless [t]."
+  },
+  {
+    "word": "food",
+    "target": "fud",
+    "child": "fut",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "A final voiced consonant /d/ becomes voiceless [t]."
+  },
+  {
+    "word": "hug",
+    "target": "hʌɡ",
+    "child": "hʌk",
+    "answer": "Devoicing",
+    "from": "ɡ",
+    "to": "k",
+    "explain": "A final voiced consonant /ɡ/ becomes voiceless [k]."
+  },
+  {
+    "word": "bug",
+    "target": "bʌɡ",
+    "child": "bʌk",
+    "answer": "Devoicing",
+    "from": "ɡ",
+    "to": "k",
+    "explain": "A final voiced consonant /ɡ/ becomes voiceless [k]."
+  },
+  {
+    "word": "flag",
+    "target": "flæɡ",
+    "child": "flæk",
+    "answer": "Devoicing",
+    "from": "ɡ",
+    "to": "k",
+    "explain": "A final voiced consonant /ɡ/ becomes voiceless [k]."
+  },
+  {
+    "word": "cave",
+    "target": "keɪv",
+    "child": "keɪf",
+    "answer": "Devoicing",
+    "from": "v",
+    "to": "f",
+    "explain": "A final voiced consonant /v/ becomes voiceless [f]."
+  },
+  {
+    "word": "wave",
+    "target": "weɪv",
+    "child": "weɪf",
+    "answer": "Devoicing",
+    "from": "v",
+    "to": "f",
+    "explain": "A final voiced consonant /v/ becomes voiceless [f]."
+  },
+  {
+    "word": "jazz",
+    "target": "dʒæz",
+    "child": "dʒæs",
+    "answer": "Devoicing",
+    "from": "z",
+    "to": "s",
+    "explain": "A final voiced consonant /z/ becomes voiceless [s]."
+  }
+];
+
+// Extra applications allow several valid process choices for a given word.
+// Each application is checked against the actual constructed IPA form.
+const consonantSet=new Set(consonants.map(c=>c[0]));
+function tokenizeTarget(target){
+ return target.match(/tʃ|dʒ|eɪ|aɪ|ɔɪ|aʊ|oʊ|./gu)||[];
+}
+function generateWordApplications(q){
+ const tokens=tokenizeTarget(q.target).filter(s=>s!=="ˈ"&&s!=="ˌ");
+ const extras=[];
+ const existing=new Set([q.answer]);
+ function add(process,from,to,details){
+   if(existing.has(process)||!q.target.includes(from))return;
+   const child=buildAppliedProduction(q.target,from,to);
+   if(!child||child===q.target)return;
+   extras.push({target:q.target,answer:process,from,to,child,explain:details});
+   existing.add(process);
+ }
+ const first=tokens[0],second=tokens[1],last=tokens[tokens.length-1],previous=tokens[tokens.length-2];
+ const stops={s:'t',z:'d',f:'p',v:'b',θ:'t',ð:'d',ʃ:'t',ʒ:'d'};
+ const fricative=tokens.find(x=>Object.prototype.hasOwnProperty.call(stops,x));
+ if(fricative)add('Stopping',fricative,stops[fricative],`Fricative /${fricative}/ is replaced by stop [${stops[fricative]}].`);
+ const affricate=tokens.find(x=>x==='tʃ'||x==='dʒ');
+ if(affricate)add('Deaffrication',affricate,affricate==='tʃ'?'ʃ':'ʒ','An affricate loses its stop component.');
+ const front={k:'t',ɡ:'d',ŋ:'n'};
+ const velar=tokens.find(x=>Object.prototype.hasOwnProperty.call(front,x));
+ if(velar)add('Fronting',velar,front[velar],`Velar /${velar}/ becomes alveolar [${front[velar]}].`);
+ const depal={ʃ:'s',ʒ:'z'};
+ const postalveolar=tokens.find(x=>Object.prototype.hasOwnProperty.call(depal,x));
+ if(postalveolar)add('Depalatalization',postalveolar,depal[postalveolar],`Postalveolar /${postalveolar}/ becomes alveolar [${depal[postalveolar]}].`);
+ const back={t:'k',d:'ɡ',n:'ŋ'};
+ // Do not automatically call a change backing when an existing velar could
+ // instead make it assimilation; those cases have explicit curated examples.
+ const alveolar= !tokens.some(x=>x==='k'||x==='ɡ'||x==='ŋ') && tokens.find(x=>Object.prototype.hasOwnProperty.call(back,x));
+ if(alveolar)add('Backing',alveolar,back[alveolar],`Alveolar /${alveolar}/ becomes velar [${back[alveolar]}].`);
+ const liquid=tokens.find((x,i)=>(x==='l'||x==='ɹ')&&tokens[i+1]&&!consonantSet.has(tokens[i+1]));
+ if(liquid)add('Gliding',liquid,'w',`Liquid /${liquid}/ is replaced by glide [w].`);
+ const codaL=tokens.find((x,i)=>x==='l'&&(i===tokens.length-1||consonantSet.has(tokens[i+1])));
+ if(codaL)add('Vocalization','l','ʊ','A coda /l/ is replaced by vowel [ʊ].');
+ if(consonantSet.has(first)&&consonantSet.has(second)){
+   const remove=first==='s'?first:second;
+   add('Cluster Reduction',remove,'',`Consonant /${remove}/ is omitted from the initial cluster.`);
+ }
+ if(consonantSet.has(last)&&!consonantSet.has(previous))
+   add('Final Consonant Deletion',last,'',`Final consonant /${last}/ is omitted.`);
+ const voice={p:'b',t:'d',k:'ɡ',f:'v',s:'z',θ:'ð',ʃ:'ʒ'};
+ if(Object.prototype.hasOwnProperty.call(voice,first)&&second&&!consonantSet.has(second))
+   add('Prevocalic Voicing',first,voice[first],`Initial voiceless /${first}/ is voiced before a vowel.`);
+ const devoice={b:'p',d:'t',ɡ:'k',v:'f',z:'s',ʒ:'ʃ'};
+ if(Object.prototype.hasOwnProperty.call(devoice,last))
+   add('Devoicing',last,devoice[last],`Final voiced /${last}/ is devoiced.`);
+ return extras;
+}
+const generatedProcessApplications=processQs.flatMap(generateWordApplications);
+const processApplications=[...processQs,...generatedProcessApplications];
+
+// A missing original sound (from: "") indicates insertion. A missing
+// replacement (to: "") indicates deletion. Both must be gradeable.
+function buildAppliedProduction(target,from,to,insertAt=null){
+ if(from===null || to===null)return null; // answer not chosen yet
+ if(from===""){
+   if(to==="" || !Number.isInteger(insertAt) || insertAt<0 || insertAt>target.length)return null;
+   return target.slice(0,insertAt)+to+target.slice(insertAt);
+ }
+ return target.replace(from,to);
+}
+function applicationsForWord(target){
+ return processApplications.filter(a=>a.target===target &&
+   (a.from==="" || target.includes(a.from)) &&
+   buildAppliedProduction(a.target,a.from,a.to,a.insertAt??null)===a.child);
+}
+function applicationForProcess(target,process){
+ return applicationsForWord(target).find(a=>a.answer===process);
+}
+const ROUND_LENGTH=10;
+let invIndex=0,invAnswered=false,invMode="category",invRound=[],invScore=0,invSelected=new Set(),invFeatures=["","", ""],invHistory=[];
+let procIndex=0,procQuestionIndex=0,procScore=0,procHistory=[],procUsedWords=new Set(),chosenProcess="",chosenOriginal=null,chosenReplacement=null,chosenInsertionAt=null,procAnswered=false;
+const ipaKeys=["p","b","t","d","k","ɡ","f","v","θ","ð","s","z","ʃ","ʒ","h","tʃ","dʒ","m","n","ŋ","l","ɹ","w","j","i","ɪ","ɛ","æ","ɑ","ɔ","ʊ","u","ʌ","ə","ɝ","eɪ","aɪ","ɔɪ","aʊ","oʊ"];
+function shuffle(a){const out=[...a];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
+function showTab(tab){document.querySelectorAll(".tab[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));$("inventory").classList.toggle("hidden",tab!=="inventory");$("process").classList.toggle("hidden",tab!=="process")}
+document.querySelectorAll(".tab[data-tab]").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+// Stored answers are snapshots taken on submission, never recomputed from the current UI.
+function formatPhonemes(symbols){return symbols.length?symbols.map(symbol=>`/${symbol}/`).join(", "):"None selected";}
+function formatSoundChange(from,to,target,insertAt){
+ const original=from===null?"Not selected":from===""?"None (insertion)":`/${from}/`;
+ const replacement=to===null?"Not selected":to===""?"None (deletion)":`[${to}]`;
+ const at=from===""&&Number.isInteger(insertAt)?` at /${target.slice(0,insertAt)}|${target.slice(insertAt)}/`:"";
+ return `${original} → ${replacement}${at}`;
+}
+function hideReview(which){
+ $(which+"-review").classList.add("hidden");
+ $(which+"-review-list").replaceChildren();
+ const button=$(which+"-review-button");
+ button.classList.add("hidden");button.textContent="Review Quiz";button.setAttribute("aria-expanded","false");
+}
+function showReview(which,history){
+ const list=$(which+"-review-list");list.replaceChildren();
+ history.forEach((entry,i)=>{
+   const article=document.createElement("article");article.className="review-item "+(entry.correct?"good":"bad");
+   const heading=document.createElement("div");heading.className="review-item-head";
+   const n=document.createElement("strong");n.textContent=`Question ${i+1}`;
+   const status=document.createElement("span");status.className="review-status";status.textContent=entry.correct?"✓ Correct":"✕ Incorrect";
+   heading.append(n,status);article.appendChild(heading);
+   const q=document.createElement("div");q.className="review-question";q.textContent=entry.question;article.appendChild(q);
+   for(const [label,value] of [["Your answer",entry.response],["Correct answer",entry.answer]]){
+     const line=document.createElement("p"),bold=document.createElement("strong");bold.textContent=label+": ";line.append(bold,document.createTextNode(value));article.appendChild(line);
+   }
+   if(entry.note){const line=document.createElement("p");line.className="review-note";line.textContent=entry.note;article.appendChild(line);}
+   list.appendChild(article);
+ });
+}
+for(const which of ["inv","proc"]){
+ $(which+"-review-button").onclick=()=>{
+   const view=$(which+"-review"),opening=view.classList.contains("hidden");
+   view.classList.toggle("hidden",!opening);
+   const button=$(which+"-review-button");button.textContent=opening?"Hide Review":"Review Quiz";
+   button.setAttribute("aria-expanded",String(opening));
+   if(opening)showReview(which,which==="inv"?invHistory:procHistory);
+ };
+}
+function startInventoryRound(){
+ invIndex=0;invScore=0;invHistory=[];hideReview("inv");
+ invRound=shuffle(invMode==="symbol"?symbolPromptPool:consonants).slice(0,ROUND_LENGTH);
+ renderInventory();
+}
+function setInventoryMode(mode){
+ invMode=mode;
+ $("inv-mode-category").classList.toggle("active",mode==="category");
+ $("inv-mode-symbol").classList.toggle("active",mode==="symbol");
+ startInventoryRound();
+}
+$("inv-mode-category").onclick=()=>setInventoryMode("category");
+$("inv-mode-symbol").onclick=()=>setInventoryMode("symbol");
+function renderInventory(){
+ const item=invRound[invIndex];invAnswered=false;invSelected=new Set();invFeatures=["","",""];
+ $("inv-count").textContent=`Question ${invIndex+1} of ${ROUND_LENGTH}`;
+ $("inv-feedback").className="feedback hidden";$("inv-next").disabled=true;
+ $("inv-next").textContent=invIndex===ROUND_LENGTH-1?"See results":"Next question";
+ $("inv-choices").className=invMode==="symbol"?"ipa-inventory-keyboard":"grid";
+ $("inv-choices").innerHTML="";$("inv-feature-fields").innerHTML="";
+ $("inv-feature-fields").classList.toggle("hidden",invMode!=="category");
+ $("inv-choices").classList.toggle("hidden",invMode==="category");
+ $("inv-submit").classList.remove("hidden");$("inv-submit").disabled=true;
+ if(invMode==="category"){
+   $("inv-instruction").textContent="Classify the consonant: select its voicing, place, and manner, then submit.";
+   $("inv-symbol").textContent=`/${item[0]}/`;
+   featureNames.forEach((name,i)=>{
+     const wrap=document.createElement("div");wrap.className="feature-group";
+     const label=document.createElement("strong");label.textContent=name;wrap.appendChild(label);
+     const options=document.createElement("div");options.className="feature-options";
+     featureOptions[i].forEach(value=>{
+       const b=document.createElement("button");b.textContent=value;b.className="choice";b.setAttribute("aria-pressed","false");
+       b.onclick=()=>{
+         if(invAnswered)return;
+         invFeatures[i]=value;
+         [...options.children].forEach(x=>{x.classList.toggle("selected",x===b);x.setAttribute("aria-pressed",String(x===b));});
+         $("inv-submit").disabled=invFeatures.some(x=>!x);
+       };
+       options.appendChild(b);
+     });
+     wrap.appendChild(options);$("inv-feature-fields").appendChild(wrap);
+   });
+ }else{
+   $("inv-instruction").textContent="Select every IPA consonant matching the listed feature set, then submit. Prompts may use 1, 2, or 3 features. Tap again to deselect.";
+   $("inv-symbol").textContent=item.label;
+   // Shuffle once per question; the keys stay put while the learner selects answers.
+   shuffle(consonants).forEach(c=>{
+     const symbol=c[0],b=document.createElement("button");b.className="key";b.textContent=symbol;
+     b.setAttribute("aria-pressed","false");
+     b.onclick=()=>{
+       if(invAnswered)return;
+       if(invSelected.has(symbol))invSelected.delete(symbol);else invSelected.add(symbol);
+       b.classList.toggle("selected",invSelected.has(symbol));
+       b.setAttribute("aria-pressed",String(invSelected.has(symbol)));
+       $("inv-submit").disabled=invSelected.size===0;
+     };
+     $("inv-choices").appendChild(b);
+   });
+ }
+}
+$("inv-submit").onclick=()=>{
+ if(invAnswered)return;
+ const item=invRound[invIndex];
+ invAnswered=true;
+ if(invMode==="category"){
+   const expected=item.slice(1);
+   const correct=expected.every((x,i)=>x===invFeatures[i]);
+   if(correct)invScore++;
+   invHistory.push({question:`Classify /${item[0]}/ by voicing, place, and manner`,
+     response:invFeatures.join(" ").toLowerCase(),answer:featureDescription(item),correct});
+   [...$("inv-feature-fields").children].forEach((group,i)=>{
+     [...group.querySelectorAll("button")].forEach(b=>{
+       b.disabled=true;
+       if(b.textContent===expected[i])b.classList.add("correct");
+       else if(b.textContent===invFeatures[i])b.classList.add("wrong");
+     });
+   });
+   $("inv-feedback").className="feedback "+(correct?"good":"bad");
+   $("inv-feedback").textContent=correct?"Correct! All three features match.":`Correct classification: ${featureDescription(item)}.`;
+ }else{
+   const expected=new Set(item.matches);
+   const correct=[...expected].filter(x=>invSelected.has(x));
+   const extra=[...invSelected].filter(x=>!expected.has(x));
+   const missed=[...expected].filter(x=>!invSelected.has(x));
+   const perfect=extra.length===0&&missed.length===0;
+   if(perfect)invScore++;
+   const userSymbols=consonants.filter(c=>invSelected.has(c[0])).map(c=>c[0]);
+   invHistory.push({question:`Select all IPA consonants matching: ${item.label}`,
+     response:formatPhonemes(userSymbols),answer:formatPhonemes(item.matches),correct:perfect});
+   [...$("inv-choices").children].forEach(b=>{
+     b.disabled=true;const symbol=b.textContent;b.classList.remove("selected");
+     if(expected.has(symbol))b.classList.add(invSelected.has(symbol)?"correct":"missed");
+     else if(invSelected.has(symbol))b.classList.add("wrong");
+   });
+   $("inv-feedback").className="feedback "+(perfect?"good":"bad");
+   $("inv-feedback").textContent=perfect?`Correct! ${expected.size} matching symbol(s).`:`${correct.length} of ${expected.size} correct; ${extra.length} extra, ${missed.length} missed. Correct set: ${[...expected].map(x=>"/"+x+"/").join(", ")}.`;
+ }
+ $("inv-submit").disabled=true;$("inv-next").disabled=false;
+};
+$("inv-next").onclick=()=>{
+ if(!invAnswered)return;
+ if(invIndex===ROUND_LENGTH-1){
+   $("inv-count").textContent="Round complete";
+   $("inv-symbol").textContent=`${invScore} / ${ROUND_LENGTH}`;
+   $("inv-instruction").textContent="Round complete — one point per fully correct question";
+   $("inv-choices").innerHTML="";$("inv-feature-fields").innerHTML="";
+   $("inv-submit").classList.add("hidden");
+   $("inv-feedback").className="feedback "+(invScore>=8?"good":"");
+   $("inv-feedback").textContent="Review your answers below, or restart for a fresh set of 10.";
+   $("inv-next").disabled=true;$("inv-next").textContent="Round complete";
+   $("inv-review-button").classList.remove("hidden");
+   return;
+ }
+ invIndex++;renderInventory();
+};
+$("inv-reset").onclick=()=>{$("inv-submit").classList.remove("hidden");startInventoryRound();};
+function currentQ(){return processQs[procQuestionIndex]}
+// Sample adult words uniformly, never repeating a word already displayed this round.
+// Refreshes also count as displayed words even when the question was skipped.
+const processWordBank=[...new Set(processQs.map(q=>q.word))];
+function unusedProcessWords(){return processWordBank.filter(word=>!procUsedWords.has(word));}
+function selectUnseenProcessWord(){
+ const available=unusedProcessWords();
+ if(!available.length)return false;
+ const word=available[Math.floor(Math.random()*available.length)];
+ const possible=processQs.map((q,i)=>({q,i})).filter(({q})=>q.word===word);
+ procQuestionIndex=possible[Math.floor(Math.random()*possible.length)].i;
+ procUsedWords.add(word);
+ return true;
+}
+function canRefreshProcessWord(){
+ // Keep enough fresh words for every remaining question in the 10-question round.
+ return unusedProcessWords().length > ROUND_LENGTH-procIndex-1;
+}
+function moveToDifferentProcessWord(){
+ if(!selectUnseenProcessWord())return;
+ renderProcess();
+}
+function renderProcess(){
+ const q=currentQ(),mode=$("proc-mode").value;procAnswered=false;chosenProcess="";chosenOriginal=null;chosenReplacement=null;chosenInsertionAt=null;
+ $("proc-count").textContent=`Question ${procIndex+1} of ${ROUND_LENGTH}`;
+ $("proc-prompt").innerHTML=mode==="recognize"?`/${q.target}/ → [${q.child}]<small>${q.word} · Adult target → child's production</small>`:`/${q.target}/<small>${q.word} · Adult target — apply the process you select</small>`;
+ $("proc-feedback").className="feedback hidden";$("proc-next").disabled=true;
+ $("proc-next").textContent=procIndex===ROUND_LENGTH-1?"See results":"Next question";
+ $("proc-refresh").disabled=!canRefreshProcessWord();$("proc-refresh").classList.remove("hidden");$("sound-back").disabled=false;
+ $("ipa-stage").classList.add("hidden");$("step-two").classList.add("hidden");$("step-one").classList.remove("hidden");
+ $("process-keyboard").classList.remove("hidden");$("process-keyboard").innerHTML="";
+ $("step-one").classList.add("active");$("step-two").classList.remove("active");$("proc-submit").disabled=true;
+ // Recognition retains the full list; production only shows processes with a
+ // valid, constructible sound change for the currently displayed adult word.
+ const available=mode==="produce"
+   ? [...new Set(applicationsForWord(q.target).map(a=>a.answer))]
+   : processes;
+ shuffle(available).forEach(p=>{const b=document.createElement("button");b.className="choice";b.textContent=p;b.onclick=()=>selectProcess(p);$("process-keyboard").appendChild(b)});
+}
+function selectProcess(p){
+ chosenProcess=p;[...$("process-keyboard").children].forEach(b=>{b.disabled=true;b.classList.toggle("selected",b.textContent===p)});
+ $("step-one").classList.remove("active");$("step-two").classList.remove("hidden");$("step-two").classList.add("active");
+ $("process-keyboard").classList.add("hidden");$("ipa-stage").classList.remove("hidden");
+ const q=currentQ(),mode=$("proc-mode").value;
+ $("sound-instruction").textContent=mode==="recognize"?"Select the affected sound change":"Select the sound(s) to change";
+ $("ipa-help").textContent=mode==="recognize"?
+   "Select the original sound (None for an insertion), then choose its replacement (None for a deletion).":
+   "Select the original sound, or None if you are inserting a sound.";
+ $("original-sound").textContent="—";$("replacement-sound").textContent="—";
+ $("replacement-wrap").classList.add("hidden");$("insertion-wrap").classList.add("hidden");
+ $("production-wrap").classList.toggle("hidden",mode==="recognize");
+ $("built-production").textContent="[ ]";
+ $("original-keys").innerHTML="";
+ const symbols=[...new Set(q.target.match(/tʃ|dʒ|eɪ|aɪ|ɔɪ|aʊ|oʊ|./gu)||[])];
+ // Reduplication or syllable deletion may affect multiple phonemes at once.
+ const expectedFrom=mode==="produce"?applicationForProcess(q.target,p)?.from:q.from;
+ if(expectedFrom && !symbols.includes(expectedFrom))symbols.unshift(expectedFrom);
+ const originalChoices=shuffle(["",...symbols]); // None is the original sound for epenthesis.
+ originalChoices.forEach(s=>{
+   const b=document.createElement("button");b.className="key";
+   b.textContent=s===""?"∅ None":s;
+   b.title=s===""?"No original sound (insertion)":`Original sound /${s}/`;
+   b.onclick=()=>{
+     chosenOriginal=s;chosenReplacement=null;chosenInsertionAt=null;
+     $("original-sound").textContent=s===""?"∅ None":"/"+s+"/";
+     $("replacement-sound").textContent="—";
+     $("replacement-wrap").classList.remove("hidden");
+     $("insertion-wrap").classList.toggle("hidden",s!=="");
+     [...$("original-keys").children].forEach(x=>x.classList.toggle("selected",x===b));
+     $("proc-submit").disabled=true;
+     renderInsertionPositions();renderReplacementKeys();updateBuiltProduction();
+   };
+   $("original-keys").appendChild(b);
+ });
+ $("proc-submit").disabled=true;
+}
+function renderInsertionPositions(){
+ $("insertion-keys").innerHTML="";
+ if(chosenOriginal!=="")return;
+ const tokens=currentQ().target.match(/tʃ|dʒ|eɪ|aɪ|ɔɪ|aʊ|oʊ|./gu)||[];
+ let at=0;
+ for(let i=0;i<=tokens.length;i++){
+   const label=i===0?`Before /${tokens[0]}/`:
+     i===tokens.length?`After /${tokens[tokens.length-1]}/`:
+       `Between /${tokens[i-1]}/ and /${tokens[i]}/`;
+   const position=at;
+   const b=document.createElement("button");b.className="choice";b.textContent=label;
+   b.onclick=()=>{
+     chosenInsertionAt=position;
+     [...$("insertion-keys").children].forEach(x=>x.classList.toggle("selected",x===b));
+     updateProcessSubmit();updateBuiltProduction();
+   };
+   $("insertion-keys").appendChild(b);
+   if(i<tokens.length)at+=tokens[i].length;
+ }
+}
+function updateProcessSubmit(){
+ $("proc-submit").disabled=chosenOriginal===null || chosenReplacement===null ||
+   (chosenOriginal==="" && chosenInsertionAt===null);
+}
+function updateBuiltProduction(){
+ if($("proc-mode").value!=="produce")return;
+ const result=buildAppliedProduction(currentQ().target,chosenOriginal,chosenReplacement,chosenInsertionAt);
+ $("built-production").textContent=result===null?"[ ]":"["+result+"]";
+}
+function renderReplacementKeys(){
+ $("replacement-keys").innerHTML="";
+ // None represents an omitted replacement sound: a deletion.
+ // Shuffle once whenever this replacement keyboard is opened; do not move active keys.
+ const q=currentQ(),mode=$("proc-mode").value;
+ const exemplar=mode==="produce"?applicationForProcess(q.target,chosenProcess):q;
+ const special=exemplar && exemplar.to && !ipaKeys.includes(exemplar.to)?[exemplar.to]:[];
+ shuffle(["",...ipaKeys,...special]).forEach(s=>{
+   const b=document.createElement("button");b.className="key";
+   b.textContent=s===""?"∅ None":s;
+   b.title=s===""?"No replacement (delete original sound)":`Replace with [${s}]`;
+   b.onclick=()=>{
+     chosenReplacement=s;$("replacement-sound").textContent=s===""?"∅ None":"["+s+"]";
+     [...$("replacement-keys").children].forEach(x=>x.classList.toggle("selected",x===b));
+     updateProcessSubmit();updateBuiltProduction();
+   };
+   $("replacement-keys").appendChild(b);
+ });
+}
+$("sound-back").onclick=()=>{chosenProcess="";chosenOriginal=null;chosenReplacement=null;chosenInsertionAt=null;$("ipa-stage").classList.add("hidden");$("step-two").classList.add("hidden");$("step-one").classList.add("active");$("process-keyboard").classList.remove("hidden");[...$("process-keyboard").children].forEach(b=>{b.disabled=false;b.classList.remove("selected")})};
+$("proc-submit").onclick=()=>{
+ const q=currentQ(),mode=$("proc-mode").value;
+ const constructed=buildAppliedProduction(q.target,chosenOriginal,chosenReplacement,chosenInsertionAt);
+ const expected=mode==="produce"?applicationForProcess(q.target,chosenProcess):q;
+ const ok=!!expected && (mode==="recognize"?chosenProcess===q.answer:true)
+   && chosenOriginal===expected.from && chosenReplacement===expected.to
+   && (expected.from!=="" || chosenInsertionAt===expected.insertAt)
+   && constructed===expected.child;
+ procAnswered=true;
+ $("proc-feedback").className="feedback "+(ok?"good":"bad");
+ $("proc-feedback").textContent=(ok?"Correct! ":"Not quite. ")+
+   (expected?expected.explain+" Expected production: ["+expected.child+"].":"This process is not available for the selected word.");
+ if(ok)procScore++;
+ const selectedProduction=constructed===null?"Not constructed":`[${constructed}]`;
+ const actualAnswer=`${chosenProcess || "No process selected"}; ${formatSoundChange(chosenOriginal,chosenReplacement,q.target,chosenInsertionAt)}; production: ${selectedProduction}`;
+ const reference=expected||q;
+ const rightAnswer=`${reference.answer}; ${formatSoundChange(reference.from,reference.to,q.target,reference.insertAt??null)}; production: [${reference.child}]`;
+ procHistory.push({question:mode==="recognize"?`${q.word}: /${q.target}/ → [${q.child}]`:
+   `${q.word}: /${q.target}/ — apply a process`,response:actualAnswer,
+   answer:rightAnswer,correct:ok,note:reference.explain||""});
+ $("proc-next").disabled=false;$("proc-submit").disabled=true;$("proc-refresh").disabled=true;
+ // Lock the submitted choices to preserve consistency with the recorded review answer.
+ for(const id of ["original-keys","replacement-keys","insertion-keys"]){
+   $(id).querySelectorAll("button").forEach(b=>b.disabled=true);
+ }
+ $("sound-back").disabled=true;
+};
+function finishProcessRound(){
+ $("proc-count").textContent="Round complete";
+ $("proc-prompt").textContent=`${procScore} / ${ROUND_LENGTH}`;
+ $("proc-refresh").classList.add("hidden");
+ $("step-one").classList.add("hidden");$("step-two").classList.add("hidden");
+ $("process-keyboard").classList.add("hidden");$("ipa-stage").classList.add("hidden");
+ $("proc-feedback").className="feedback "+(procScore>=8?"good":"");
+ $("proc-feedback").textContent="Round complete — review your responses, or restart for another set of questions.";
+ $("proc-next").disabled=true;$("proc-next").textContent="Round complete";
+ $("proc-review-button").classList.remove("hidden");
+}
+function startProcessRound(){
+ procIndex=0;procScore=0;procHistory=[];procUsedWords=new Set();
+ hideReview("proc");
+ if(selectUnseenProcessWord())renderProcess();
+}
+$("proc-refresh").onclick=()=>{if(!procAnswered&&canRefreshProcessWord())moveToDifferentProcessWord()};
+$("proc-next").onclick=()=>{
+ if(!procAnswered)return;
+ if(procIndex===ROUND_LENGTH-1){finishProcessRound();return;}
+ procIndex++;moveToDifferentProcessWord();
+};
+$("proc-reset").onclick=startProcessRound;
+$("proc-mode").onchange=startProcessRound;
+startInventoryRound();startProcessRound();
+</script>
+</body>
+</html>
