@@ -3264,7 +3264,9 @@ $("inv-submit").onclick=()=>{
      });
    });
    $("inv-feedback").className="feedback "+(correct?"good":"bad");
-   $("inv-feedback").textContent=correct?"Correct! All three features match.":`Correct classification: ${featureDescription(item)}.`;
+   $("inv-feedback").textContent=correct?
+     `Correct! You classified /${item[0]}/ as ${featureDescription(item)}.`:
+     `You classified /${item[0]}/ as ${invFeatures.join(" ").toLowerCase()}, but the correct classification is ${featureDescription(item)}.`;
  }else{
    const expected=new Set(item.matches);
    const correct=[...expected].filter(x=>invSelected.has(x));
@@ -3281,7 +3283,9 @@ $("inv-submit").onclick=()=>{
      else if(invSelected.has(symbol))b.classList.add("wrong");
    });
    $("inv-feedback").className="feedback "+(perfect?"good":"bad");
-   $("inv-feedback").textContent=perfect?`Correct! ${expected.size} matching symbol(s).`:`${correct.length} of ${expected.size} correct; ${extra.length} extra, ${missed.length} missed. Correct set: ${[...expected].map(x=>"/"+x+"/").join(", ")}.`;
+   $("inv-feedback").textContent=perfect?
+     `Correct! You selected ${formatPhonemes(userSymbols)}, the full set for ${item.label}.`:
+     `You selected ${formatPhonemes(userSymbols)} for ${item.label}, but the correct set is ${formatPhonemes(item.matches)}. ${correct.length} of ${expected.size} correct; ${extra.length} extra, ${missed.length} missed.`;
  }
  $("inv-submit").disabled=true;$("inv-next").disabled=false;
 };
@@ -3324,9 +3328,31 @@ function moveToDifferentProcessWord(){
  if(!selectUnseenProcessWord())return;
  renderProcess();
 }
-// Typed answers are case-insensitive and ignore spaces and hyphens; spelling still matters.
-function normalizeProcessAnswer(value){return value.normalize("NFKC").toLowerCase().trim().replace(/[\s\-‐‑‒–—]+/gu,"");}
-function processAnswerMatches(answer,expected){return normalizeProcessAnswer(answer)===normalizeProcessAnswer(expected);}
+// Accept descriptive equivalents for the 16 taught process names. Do not accept
+// unqualified labels such as "assimilation" or "consonant harmony": place matters.
+const processNameAlternatives={
+  "Stopping":["Fricative Stopping","Stopping of Fricatives"],
+  "Deaffrication":["Affricate Simplification"],
+  "Fronting":["Velar Fronting"],
+  "Depalatalization":["Depalatalisation","Palatal Depalatalization"],
+  "Backing":["Alveolar Backing"],
+  "Gliding":["Liquid Gliding","Gliding of Liquids"],
+  "Vocalization":["Vowelization","Vocalisation","Vowelisation","Liquid Vocalization","Liquid Vowelization","Lateral Vocalization","Lateral Vowelization"],
+  "Cluster Reduction":["Consonant Cluster Reduction","Cluster Simplification","Consonant Cluster Simplification"],
+  "Reduplication":["Syllable Reduplication"],
+  "Weak Syllable Deletion":["Unstressed Syllable Deletion","Weak Syllable Omission","Unstressed Syllable Omission"],
+  "Final Consonant Deletion":["Final Consonant Omission","Word Final Consonant Deletion","Word Final Consonant Omission"],
+  "Labial Assimilation":["Bilabial Assimilation","Labial Harmony","Bilabial Harmony","Labial Consonant Harmony","Bilabial Consonant Harmony"],
+  "Alveolar Assimilation":["Alveolar Harmony","Alveolar Consonant Harmony"],
+  "Velar Assimilation":["Velar Harmony","Velar Consonant Harmony"],
+  "Prevocalic Voicing":["Initial Consonant Voicing","Initial Voicing"],
+  "Devoicing":["Final Devoicing","Final Consonant Devoicing"]
+};
+function normalizeProcessAnswer(value){return String(value).normalize("NFKC").toLowerCase().trim().replace(/[\s\-‐‑‒–—_]+/gu,"");}
+function processAnswerMatches(answer,expected){
+  const normalized=normalizeProcessAnswer(answer);
+  return [expected,...(processNameAlternatives[expected]||[])].some(name=>normalizeProcessAnswer(name)===normalized);
+}
 function setProcessAnswerStyle(style){
  procAnswerStyle=style;
  for(const [value,id] of [["choices","proc-choice-style"],["typed","proc-typed-style"]]){
@@ -3463,16 +3489,37 @@ $("proc-submit").onclick=()=>{
  const q=currentQ(),mode=$("proc-mode").value;
  const constructed=buildAppliedProduction(q.target,chosenOriginal,chosenReplacement,chosenInsertionAt);
  const expected=mode==="produce"?applicationForProcess(q.target,chosenProcess):q;
- const ok=!!expected && (mode==="recognize"?processAnswerMatches(chosenProcess,q.answer):true)
-   && chosenOriginal===expected.from && chosenReplacement===expected.to
+ const processCorrect=mode==="recognize"?processAnswerMatches(chosenProcess,q.answer):!!expected;
+ const soundCorrect=!!expected && chosenOriginal===expected.from && chosenReplacement===expected.to
    && (expected.from!=="" || chosenInsertionAt===expected.insertAt)
    && constructed===expected.child;
+ const ok=processCorrect && soundCorrect;
  procAnswered=true;
- $("proc-feedback").className="feedback "+(ok?"good":"bad");
- $("proc-feedback").textContent=(ok?"Correct! ":"Not quite. ")+
-   (expected?expected.explain+" Expected production: ["+expected.child+"].":"This process is not available for the selected word.");
- if(ok)procScore++;
+ const typedMode=mode==="recognize"&&procAnswerStyle==="typed";
+ const responseVerb=typedMode?"entered":"selected";
+ const providedProcess=`You ${responseVerb} “${chosenProcess}”`;
+ const selectedChange=formatSoundChange(chosenOriginal,chosenReplacement,q.target,chosenInsertionAt);
+ const correctChange=expected?formatSoundChange(expected.from,expected.to,q.target,expected.insertAt??null):"Not available";
  const selectedProduction=constructed===null?"Not constructed":`[${constructed}]`;
+ let immediateFeedback="";
+ if(mode==="recognize"){
+   if(!processCorrect){
+     immediateFeedback=`Not quite. ${providedProcess}, but the correct process was ${q.answer}. Your sound change was ${selectedChange}; the expected change was ${correctChange}.`;
+   }else if(!soundCorrect){
+     immediateFeedback=`Not quite. ${providedProcess}, which correctly identifies ${q.answer}, but your sound change was ${selectedChange}; the expected change was ${correctChange}.`;
+   }else{
+     immediateFeedback=`Correct! ${providedProcess}, correctly identifying ${q.answer}, and matched the sound change ${correctChange}.`;
+   }
+ }else if(expected){
+   immediateFeedback=ok?
+     `Correct! You applied ${expected.answer} using ${selectedChange} to produce ${selectedProduction}.`:
+     `Not quite. You selected ${chosenProcess} and used ${selectedChange} to produce ${selectedProduction}, but the expected change was ${correctChange} to produce [${expected.child}].`;
+ }else{
+   immediateFeedback=`Not quite. You selected ${chosenProcess}, which is not available for this word.`;
+ }
+ $("proc-feedback").className="feedback "+(ok?"good":"bad");
+ $("proc-feedback").textContent=immediateFeedback+(expected?` ${expected.explain} Expected production: [${expected.child}].`:"");
+ if(ok)procScore++;
  const actualAnswer=`${chosenProcess || "No process selected"}; ${formatSoundChange(chosenOriginal,chosenReplacement,q.target,chosenInsertionAt)}; production: ${selectedProduction}`;
  const reference=expected||q;
  const rightAnswer=`${reference.answer}; ${formatSoundChange(reference.from,reference.to,q.target,reference.insertAt??null)}; production: [${reference.child}]`;
