@@ -193,6 +193,15 @@ input[type="text"]::placeholder{color:#b0b0bc}
 .typed-process-form{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
 .typed-process-form input{flex:1 1 230px}
 .typed-process-form button{min-height:48px}
+.transcribe-form{margin:15px 0 10px}
+.transcribe-field{display:grid;gap:8px;margin:14px 0}
+.transcribe-field label{font-size:.96rem}
+.transcribe-field:focus-within label strong{color:var(--accent-ink)}
+.transcribe-field input{max-width:none;font-size:1.15rem;letter-spacing:.02em}
+.transcribe-keyboard-label{margin:17px 0 5px}
+.transcribe-actions{align-items:center}
+.transcribe-actions .primary{margin-left:auto}
+.feedback p{margin:5px 0}
 select{
   font:inherit;padding:9px 12px;
   border:1px solid #62636c;border-radius:9px;
@@ -247,10 +256,11 @@ footer{font-size:.86rem;color:var(--muted);margin-top:24px;border-top:1px solid 
 <section id="process" class="panel hidden">
   <div class="topline"><h2>Phonological processes</h2><span class="pill" id="proc-count">Question 1 of 10</span></div>
   <div class="topline">
-    <p>Practice with 300 unique words: 18–19 curated examples for each of 16 processes. Each round uses 10 randomly selected words without repeats. Choose whether to recognize a process or build a production.</p>
+    <p>Practice with 300 unique words: 18–19 curated examples for each of 16 processes. Each round uses 10 randomly selected words without repeats. Identify a process, apply one, or transcribe an adult word and its transformed production.</p>
     <select id="proc-mode" aria-label="Question mode">
       <option value="recognize">Identify the process</option>
       <option value="produce">Apply a process</option>
+      <option value="transcribe">Transcribe &amp; apply (harder)</option>
     </select>
   </div>
   <div id="proc-answer-setting" class="process-answer-setting">
@@ -265,6 +275,24 @@ footer{font-size:.86rem;color:var(--muted);margin-top:24px;border-top:1px solid 
     <button class="refresh-word" id="proc-refresh" type="button" title="Replace this word with a different one" aria-label="Try a different word"><span class="refresh-icon" aria-hidden="true">↻</span> Different word</button>
   </div>
   <div class="prompt" id="proc-prompt">/kæt/ → [tæt]<small>Adult target → child's production</small></div>
+  <form id="transcribe-form" class="transcribe-form hidden" autocomplete="off">
+    <p class="muted">Write the adult word in broad American English IPA, then write the whole word again with the given process applied. You can type directly or use the IPA keyboard. Stress marks and / / or [ ] are optional.</p>
+    <div class="transcribe-field">
+      <label for="transcribe-adult"><strong>1. Adult word in IPA</strong> <span class="muted">(phonemic transcription)</span></label>
+      <input id="transcribe-adult" type="text" inputmode="text" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Type adult IPA…" aria-label="Adult word IPA" required>
+    </div>
+    <div class="transcribe-field">
+      <label for="transcribe-child"><strong>2. Word with the process applied</strong> <span class="muted">(child production in IPA)</span></label>
+      <input id="transcribe-child" type="text" inputmode="text" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Type transformed IPA…" aria-label="Transformed word IPA" required>
+    </div>
+    <p class="muted transcribe-keyboard-label">IPA keyboard — select a field, then tap symbols to insert them:</p>
+    <div id="transcribe-keys" class="keyboard" aria-label="IPA transcription keyboard"></div>
+    <div class="actions transcribe-actions">
+      <button id="transcribe-backspace" type="button">⌫ Backspace</button>
+      <button id="transcribe-clear" type="button">Clear field</button>
+      <button id="transcribe-submit" type="submit" class="primary" disabled>Check both answers</button>
+    </div>
+  </form>
   <div class="step active" id="step-one"><span>1</span><strong>Choose the phonological process</strong></div>
   <div id="process-keyboard" class="grid"></div>
   <form id="typed-process-form" class="typed-process-form hidden" autocomplete="off">
@@ -3144,6 +3172,78 @@ const ROUND_LENGTH=10;
 let invIndex=0,invAnswered=false,invMode="category",invRound=[],invScore=0,invSelected=new Set(),invFeatures=["","", ""],invHistory=[];
 let procIndex=0,procQuestionIndex=0,procScore=0,procHistory=[],procUsedWords=new Set(),chosenProcess="",chosenOriginal=null,chosenReplacement=null,chosenInsertionAt=null,procAnswered=false,procAnswerStyle="choices";
 const ipaKeys=["p","b","t","d","k","ɡ","f","v","θ","ð","s","z","ʃ","ʒ","h","tʃ","dʒ","m","n","ŋ","l","ɹ","w","j","i","ɪ","ɛ","æ","ɑ","ɔ","ʊ","u","ʌ","ə","ɝ","eɪ","aɪ","ɔɪ","aʊ","oʊ"];
+// Additional symbols used in the curated word bank but not the sound-change keyboard.
+const transcriptionKeys=[...new Set([...ipaKeys,"ɚ","ˈ","ˌ"])];
+let activeTranscriptionField="transcribe-adult";
+function normalizeTranscription(value){
+  // Ignore only notational differences, not distinct vowels or consonants.
+  let result=String(value).normalize("NFC").trim();
+  result=result.replace(/^[\/\[⟨]\s*/u,"").replace(/\s*[\/\]⟩]$/u,"");
+  return result.replace(/\s+/gu,"").replace(/[ˈˌ]/gu,"")
+    .replace(/([td])͡([ʃʒ])/gu,"$1$2")
+    .replace(/g/gu,"ɡ").replace(/r/gu,"ɹ");
+}
+function updateTranscriptionSubmit(){
+  $("transcribe-submit").disabled=procAnswered ||
+    !$("transcribe-adult").value.trim() || !$("transcribe-child").value.trim();
+}
+function getActiveTranscriptionInput(){return $(activeTranscriptionField);}
+for(const id of ["transcribe-adult","transcribe-child"]){
+  $(id).addEventListener("focus",()=>activeTranscriptionField=id);
+  $(id).addEventListener("input",updateTranscriptionSubmit);
+}
+function editTranscriptionField(action,value=""){
+  if(procAnswered)return;
+  const field=getActiveTranscriptionInput();
+  const start=field.selectionStart??field.value.length,end=field.selectionEnd??start;
+  if(action==="clear")field.value="";
+  else if(action==="backspace"){
+    const from=start===end?Math.max(0,start-1):start;
+    field.setRangeText("",from,end,"end");
+  }else field.setRangeText(value,start,end,"end");
+  field.focus();updateTranscriptionSubmit();
+}
+function renderTranscriptionKeyboard(){
+  const keyboard=$("transcribe-keys");keyboard.replaceChildren();
+  // Shuffle once per question; keep symbol locations fixed during transcription.
+  shuffle(transcriptionKeys).forEach(symbol=>{
+    const button=document.createElement("button");button.type="button";button.className="key";
+    button.textContent=symbol;button.setAttribute("aria-label",`Insert IPA ${symbol}`);
+    button.addEventListener("pointerdown",event=>event.preventDefault());
+    button.onclick=()=>editTranscriptionField("insert",symbol);
+    keyboard.appendChild(button);
+  });
+}
+function checkTranscriptionAnswer(){
+  if(procAnswered || $("proc-mode").value!=="transcribe")return;
+  const q=currentQ(),adult=$("transcribe-adult").value.trim(),child=$("transcribe-child").value.trim();
+  if(!adult||!child)return;
+  const adultCorrect=normalizeTranscription(adult)===normalizeTranscription(q.target);
+  const childCorrect=normalizeTranscription(child)===normalizeTranscription(q.child);
+  const correct=adultCorrect&&childCorrect;
+  procAnswered=true;if(correct)procScore++;
+  const feedback=$("proc-feedback");feedback.className="feedback "+(correct?"good":"bad");
+  feedback.replaceChildren();
+  for(const line of [
+    correct?"Correct! Both transcriptions match the reference.":"Not quite. Here's how each part was evaluated:",
+    adultCorrect?`✓ Adult word: /${adult}/ matches the reference /${q.target}/.`:
+      `✕ Adult word: you entered /${adult}/, but the reference is /${q.target}/.`,
+    childCorrect?`✓ Applied process: [${child}] matches [${q.child}].`:
+      `✕ Applied process: you entered [${child}], but ${q.answer} gives [${q.child}] in this example.`,
+    q.explain
+  ]){const paragraph=document.createElement("p");paragraph.textContent=line;feedback.appendChild(paragraph);}
+  procHistory.push({question:`${q.word} — apply ${q.answer} (IPA transcription)`,
+    response:`Adult: /${adult}/; with process: [${child}]`,
+    answer:`Adult: /${q.target}/; with process: [${q.child}]`,correct,
+    note:`Adult transcription: ${adultCorrect?"correct":"incorrect"}; process application: ${childCorrect?"correct":"incorrect"}. ${q.explain}`});
+  $("proc-next").disabled=false;$("proc-refresh").disabled=true;$("transcribe-submit").disabled=true;
+  for(const id of ["transcribe-adult","transcribe-child"])$(id).disabled=true;
+  for(const button of $("transcribe-keys").querySelectorAll("button"))button.disabled=true;
+  $("transcribe-backspace").disabled=true;$("transcribe-clear").disabled=true;
+}
+$("transcribe-form").onsubmit=event=>{event.preventDefault();checkTranscriptionAnswer();};
+$("transcribe-backspace").onclick=()=>editTranscriptionField("backspace");
+$("transcribe-clear").onclick=()=>editTranscriptionField("clear");
 function shuffle(a){const out=[...a];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
 function showTab(tab){document.querySelectorAll(".tab[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));$("inventory").classList.toggle("hidden",tab!=="inventory");$("process").classList.toggle("hidden",tab!=="process")}
 document.querySelectorAll(".tab[data-tab]").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
@@ -3371,18 +3471,28 @@ $("typed-process-form").onsubmit=event=>{
 function renderProcess(){
  const q=currentQ(),mode=$("proc-mode").value;procAnswered=false;chosenProcess="";chosenOriginal=null;chosenReplacement=null;chosenInsertionAt=null;
  $("proc-count").textContent=`Question ${procIndex+1} of ${ROUND_LENGTH}`;
- $("proc-prompt").innerHTML=mode==="recognize"?`/${q.target}/ → [${q.child}]<small>${q.word} · Adult target → child's production</small>`:`/${q.target}/<small>${q.word} · Adult target — apply the process you select</small>`;
+ $("proc-prompt").innerHTML=mode==="recognize"?`/${q.target}/ → [${q.child}]<small>${q.word} · Adult target → child's production</small>`:
+   mode==="transcribe"?`${q.word}<small>Apply: ${q.answer} · Transcribe the adult word and the transformed production</small>`:
+   `/${q.target}/<small>${q.word} · Adult target — apply the process you select</small>`;
  $("proc-feedback").className="feedback hidden";$("proc-next").disabled=true;
  $("proc-next").textContent=procIndex===ROUND_LENGTH-1?"See results":"Next question";
  $("proc-refresh").disabled=!canRefreshProcessWord();$("proc-refresh").classList.remove("hidden");$("sound-back").disabled=false;
  const typedMode=mode==="recognize"&&procAnswerStyle==="typed";
+ const transcribeMode=mode==="transcribe";
  $("proc-answer-setting").classList.toggle("hidden",mode!=="recognize");
+ $("transcribe-form").classList.toggle("hidden",!transcribeMode);
  $("typed-process-form").classList.toggle("hidden",!typedMode);
  $("typed-process-input").value="";$("typed-process-input").disabled=false;$("typed-process-continue").disabled=false;
  $("step-one").querySelector("strong").textContent=typedMode?"Type the phonological process":"Choose the phonological process";
- $("ipa-stage").classList.add("hidden");$("step-two").classList.add("hidden");$("step-one").classList.remove("hidden");
- $("process-keyboard").classList.toggle("hidden",typedMode);$("process-keyboard").innerHTML="";
+ $("ipa-stage").classList.add("hidden");$("step-two").classList.add("hidden");$("step-one").classList.toggle("hidden",transcribeMode);
+ $("process-keyboard").classList.toggle("hidden",typedMode||transcribeMode);$("process-keyboard").innerHTML="";
  $("step-one").classList.add("active");$("step-two").classList.remove("active");$("proc-submit").disabled=true;
+ if(transcribeMode){
+   for(const id of ["transcribe-adult","transcribe-child"]){$(id).value="";$(id).disabled=false;}
+   activeTranscriptionField="transcribe-adult";
+   $("transcribe-backspace").disabled=false;$("transcribe-clear").disabled=false;
+   renderTranscriptionKeyboard();updateTranscriptionSubmit();return;
+ }
  // Recognition retains the full list; production only shows processes with a
  // valid, constructible sound change for the currently displayed adult word.
  const available=mode==="produce"
@@ -3539,7 +3649,7 @@ function finishProcessRound(){
  $("proc-prompt").textContent=`${procScore} / ${ROUND_LENGTH}`;
  $("proc-refresh").classList.add("hidden");
  $("step-one").classList.add("hidden");$("step-two").classList.add("hidden");
- $("process-keyboard").classList.add("hidden");$("typed-process-form").classList.add("hidden");$("ipa-stage").classList.add("hidden");
+ $("process-keyboard").classList.add("hidden");$("typed-process-form").classList.add("hidden");$("ipa-stage").classList.add("hidden");$("transcribe-form").classList.add("hidden");
  $("proc-feedback").className="feedback "+(procScore>=8?"good":"");
  $("proc-feedback").textContent="Round complete — review your responses, or restart for another set of questions.";
  $("proc-next").disabled=true;$("proc-next").textContent="Round complete";
