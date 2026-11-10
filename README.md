@@ -5,7 +5,7 @@ A free, browser-based phonology practice website with a Wisconsin-inspired dark 
 ## What it includes
 
 - **IPA consonant inventory:** Classify symbols by voicing, place, and manner, or select every sound matching one to three phonetic features.
-- **Phonological processes:** Identify and apply 16 process types using a balanced word bank of 300 unique words.
+- **Phonological processes:** Three quiz modes with a balanced bank of 300 words across 16 process types: Identify the process (multiple-choice or typed name), Apply a process (build a sound change), and Transcribe & apply (write the adult word in IPA and the full IPA production after the named process).
 - Randomized IPA keyboards, randomized non-repeating words within each quiz, a **Different word** button, and a **Review Quiz** screen.
 - 10-question quiz rounds.
 - Works entirely in a web browser. **No build, runtime dependencies, login, or hosting backend required.**
