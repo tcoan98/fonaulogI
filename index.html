@@ -188,6 +188,11 @@ nav.tabs .tab{flex:1 1 210px;min-height:48px}
 input[type="text"]{font:inherit;padding:12px 14px;border:1px solid #62636c;border-radius:9px;background:#2a2b33;color:#fff;min-height:48px;width:100%;max-width:560px}
 input[type="text"]::placeholder{color:#b0b0bc}
 .process-answer-setting{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:14px 0 8px;padding:12px 15px;border:1px solid var(--line);border-radius:12px;background:#222329}
+.process-bank-setting{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;margin:10px 0 18px;padding:12px 15px;border:1px solid var(--line);border-radius:12px;background:var(--panel-raised)}
+.process-bank-setting label{white-space:nowrap;font-size:.92rem}
+.process-bank-setting select{flex:1 1 220px;min-width:0}
+#proc-bank-summary{font-size:.86rem}
+@media(max-width:540px){.process-bank-setting{align-items:stretch}.process-bank-setting select{flex:1 1 100%}}
 .process-answer-setting strong{font-size:.88rem}
 .answer-style-buttons{display:flex;gap:7px;flex-wrap:wrap}
 .answer-style-buttons button{padding:8px 13px}
@@ -275,12 +280,21 @@ footer{font-size:.86rem;color:var(--muted);margin-top:24px;border-top:1px solid 
 <section id="process" class="panel hidden">
   <div class="topline"><h2>Phonological processes</h2><span class="pill" id="proc-count">Question 1 of 10</span></div>
   <div class="topline">
-    <p>Practice with 300 unique words: 18–19 curated examples for each of 16 processes. Each round uses 10 randomly selected words without repeats. Identify a process, apply one, or transcribe an adult word and its transformed production.</p>
+    <p>Practice 16 phonological processes with 600 curated words. Choose the original 300, a new bank of 300 two- and three-syllable words, or all 600 together. Each 10-question round uses randomly selected words without repeats.</p>
     <select id="proc-mode" aria-label="Question mode">
       <option value="recognize">Identify the process</option>
       <option value="produce">Apply a process</option>
       <option value="transcribe">Transcribe &amp; apply (harder)</option>
     </select>
+  </div>
+  <div class="process-bank-setting">
+    <label for="proc-word-bank"><strong>Practice word bank</strong></label>
+    <select id="proc-word-bank" aria-label="Phonological process practice word bank">
+      <option value="original">Original 300 · foundational</option>
+      <option value="advanced">Advanced 300 · 2–3 syllables</option>
+      <option value="combined">All 600 · mixed difficulty</option>
+    </select>
+    <span id="proc-bank-summary" class="muted" aria-live="polite">300 original words</span>
   </div>
   <div id="proc-answer-setting" class="process-answer-setting">
     <strong id="answer-style-label">Answer format</strong>
@@ -422,7 +436,7 @@ const symbolPromptPool=buildSymbolPromptPool();
 // recognition examples for each of the 16 requested process types.  These are illustrative productions, not
 // developmental norms or predictions for individual children.
 const processes=["Stopping","Deaffrication","Fronting","Depalatalization","Backing","Gliding","Vocalization","Cluster Reduction","Reduplication","Weak Syllable Deletion","Final Consonant Deletion","Labial Assimilation","Alveolar Assimilation","Velar Assimilation","Prevocalic Voicing","Devoicing"];
-const processQs=
+const originalProcessQs=
 [
   {
     "word": "sun",
@@ -3126,6 +3140,2712 @@ const processQs=
   }
 ];
 
+// Second, independently audited set of 300 two- and three-syllable words.
+// Stored separately so visitors can choose the original bank or the harder bank.
+const advancedProcessQs=[
+  {
+    "word": "very",
+    "target": "vɛɹi",
+    "child": "bɛɹi",
+    "answer": "Stopping",
+    "from": "v",
+    "to": "b",
+    "explain": "A fricative is replaced by a stop: /v/ → [b]."
+  },
+  {
+    "word": "father",
+    "target": "fɑðɚ",
+    "child": "pɑðɚ",
+    "answer": "Stopping",
+    "from": "f",
+    "to": "p",
+    "explain": "A fricative is replaced by a stop: /f/ → [p]."
+  },
+  {
+    "word": "several",
+    "target": "sɛvɹəl",
+    "child": "tɛvɹəl",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative is replaced by a stop: /s/ → [t]."
+  },
+  {
+    "word": "southern",
+    "target": "sʌðɚn",
+    "child": "tʌðɚn",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative is replaced by a stop: /s/ → [t]."
+  },
+  {
+    "word": "city",
+    "target": "sɪti",
+    "child": "tɪti",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative is replaced by a stop: /s/ → [t]."
+  },
+  {
+    "word": "sister",
+    "target": "sɪstɚ",
+    "child": "tɪstɚ",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative is replaced by a stop: /s/ → [t]."
+  },
+  {
+    "word": "seven",
+    "target": "sɛvən",
+    "child": "tɛvən",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative is replaced by a stop: /s/ → [t]."
+  },
+  {
+    "word": "silver",
+    "target": "sɪlvɚ",
+    "child": "tɪlvɚ",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative is replaced by a stop: /s/ → [t]."
+  },
+  {
+    "word": "finally",
+    "target": "faɪnəli",
+    "child": "paɪnəli",
+    "answer": "Stopping",
+    "from": "f",
+    "to": "p",
+    "explain": "A fricative is replaced by a stop: /f/ → [p]."
+  },
+  {
+    "word": "serious",
+    "target": "sɪɹiəs",
+    "child": "tɪɹiəs",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative is replaced by a stop: /s/ → [t]."
+  },
+  {
+    "word": "silent",
+    "target": "saɪlənt",
+    "child": "taɪlənt",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative is replaced by a stop: /s/ → [t]."
+  },
+  {
+    "word": "visitor",
+    "target": "vɪzɪtɚ",
+    "child": "bɪzɪtɚ",
+    "answer": "Stopping",
+    "from": "v",
+    "to": "b",
+    "explain": "A fricative is replaced by a stop: /v/ → [b]."
+  },
+  {
+    "word": "second",
+    "target": "sɛkənd",
+    "child": "tɛkənd",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative is replaced by a stop: /s/ → [t]."
+  },
+  {
+    "word": "sympathy",
+    "target": "sɪmpəθi",
+    "child": "tɪmpəθi",
+    "answer": "Stopping",
+    "from": "s",
+    "to": "t",
+    "explain": "A fricative is replaced by a stop: /s/ → [t]."
+  },
+  {
+    "word": "fashion",
+    "target": "fæʃən",
+    "child": "pæʃən",
+    "answer": "Stopping",
+    "from": "f",
+    "to": "p",
+    "explain": "A fricative is replaced by a stop: /f/ → [p]."
+  },
+  {
+    "word": "famous",
+    "target": "feɪməs",
+    "child": "peɪməs",
+    "answer": "Stopping",
+    "from": "f",
+    "to": "p",
+    "explain": "A fricative is replaced by a stop: /f/ → [p]."
+  },
+  {
+    "word": "fifteen",
+    "target": "fɪftin",
+    "child": "pɪftin",
+    "answer": "Stopping",
+    "from": "f",
+    "to": "p",
+    "explain": "A fricative is replaced by a stop: /f/ → [p]."
+  },
+  {
+    "word": "feather",
+    "target": "fɛðɚ",
+    "child": "pɛðɚ",
+    "answer": "Stopping",
+    "from": "f",
+    "to": "p",
+    "explain": "A fricative is replaced by a stop: /f/ → [p]."
+  },
+  {
+    "word": "victory",
+    "target": "vɪktɚi",
+    "child": "bɪktɚi",
+    "answer": "Stopping",
+    "from": "v",
+    "to": "b",
+    "explain": "A fricative is replaced by a stop: /v/ → [b]."
+  },
+  {
+    "word": "chapter",
+    "target": "tʃæptɚ",
+    "child": "ʃæptɚ",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop component, becoming [ʃ]."
+  },
+  {
+    "word": "children",
+    "target": "tʃɪldɹən",
+    "child": "ʃɪldɹən",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop component, becoming [ʃ]."
+  },
+  {
+    "word": "general",
+    "target": "dʒɛnɚəl",
+    "child": "ʒɛnɚəl",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop component, becoming [ʒ]."
+  },
+  {
+    "word": "gentleman",
+    "target": "dʒɛntəlmən",
+    "child": "ʒɛntəlmən",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop component, becoming [ʒ]."
+  },
+  {
+    "word": "justice",
+    "target": "dʒʌstəs",
+    "child": "ʒʌstəs",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop component, becoming [ʒ]."
+  },
+  {
+    "word": "genius",
+    "target": "dʒinjəs",
+    "child": "ʒinjəs",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop component, becoming [ʒ]."
+  },
+  {
+    "word": "journey",
+    "target": "dʒɝni",
+    "child": "ʒɝni",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop component, becoming [ʒ]."
+  },
+  {
+    "word": "generous",
+    "target": "dʒɛnɚəs",
+    "child": "ʒɛnɚəs",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop component, becoming [ʒ]."
+  },
+  {
+    "word": "charity",
+    "target": "tʃɛɹɪti",
+    "child": "ʃɛɹɪti",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop component, becoming [ʃ]."
+  },
+  {
+    "word": "gentle",
+    "target": "dʒɛntəl",
+    "child": "ʒɛntəl",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop component, becoming [ʒ]."
+  },
+  {
+    "word": "cheerful",
+    "target": "tʃɪɹfəl",
+    "child": "ʃɪɹfəl",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop component, becoming [ʃ]."
+  },
+  {
+    "word": "joyful",
+    "target": "dʒɔɪfəl",
+    "child": "ʒɔɪfəl",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop component, becoming [ʒ]."
+  },
+  {
+    "word": "junction",
+    "target": "dʒʌŋkʃən",
+    "child": "ʒʌŋkʃən",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop component, becoming [ʒ]."
+  },
+  {
+    "word": "childhood",
+    "target": "tʃaɪldhʊd",
+    "child": "ʃaɪldhʊd",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop component, becoming [ʃ]."
+  },
+  {
+    "word": "jumping",
+    "target": "dʒʌmpɪŋ",
+    "child": "ʒʌmpɪŋ",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop component, becoming [ʒ]."
+  },
+  {
+    "word": "charcoal",
+    "target": "tʃɑɹkoʊl",
+    "child": "ʃɑɹkoʊl",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop component, becoming [ʃ]."
+  },
+  {
+    "word": "jealousy",
+    "target": "dʒɛləsi",
+    "child": "ʒɛləsi",
+    "answer": "Deaffrication",
+    "from": "dʒ",
+    "to": "ʒ",
+    "explain": "The affricate /dʒ/ loses its stop component, becoming [ʒ]."
+  },
+  {
+    "word": "chocolate",
+    "target": "tʃɔklət",
+    "child": "ʃɔklət",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop component, becoming [ʃ]."
+  },
+  {
+    "word": "champion",
+    "target": "tʃæmpiən",
+    "child": "ʃæmpiən",
+    "answer": "Deaffrication",
+    "from": "tʃ",
+    "to": "ʃ",
+    "explain": "The affricate /tʃ/ loses its stop component, becoming [ʃ]."
+  },
+  {
+    "word": "country",
+    "target": "kʌntɹi",
+    "child": "tʌntɹi",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "A velar consonant moves forward to an alveolar place: /k/ → [t]."
+  },
+  {
+    "word": "garden",
+    "target": "ɡɑɹdən",
+    "child": "dɑɹdən",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "A velar consonant moves forward to an alveolar place: /ɡ/ → [d]."
+  },
+  {
+    "word": "corner",
+    "target": "kɔɹnɚ",
+    "child": "tɔɹnɚ",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "A velar consonant moves forward to an alveolar place: /k/ → [t]."
+  },
+  {
+    "word": "candy",
+    "target": "kændi",
+    "child": "tændi",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "A velar consonant moves forward to an alveolar place: /k/ → [t]."
+  },
+  {
+    "word": "candle",
+    "target": "kændəl",
+    "child": "tændəl",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "A velar consonant moves forward to an alveolar place: /k/ → [t]."
+  },
+  {
+    "word": "camera",
+    "target": "kæmɚə",
+    "child": "tæmɚə",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "A velar consonant moves forward to an alveolar place: /k/ → [t]."
+  },
+  {
+    "word": "carrot",
+    "target": "kæɹət",
+    "child": "tæɹət",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "A velar consonant moves forward to an alveolar place: /k/ → [t]."
+  },
+  {
+    "word": "caper",
+    "target": "keɪpɚ",
+    "child": "teɪpɚ",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "A velar consonant moves forward to an alveolar place: /k/ → [t]."
+  },
+  {
+    "word": "cooker",
+    "target": "kʊkɚ",
+    "child": "tʊkɚ",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "A velar consonant moves forward to an alveolar place: /k/ → [t]."
+  },
+  {
+    "word": "gummy",
+    "target": "ɡʌmi",
+    "child": "dʌmi",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "A velar consonant moves forward to an alveolar place: /ɡ/ → [d]."
+  },
+  {
+    "word": "golden",
+    "target": "ɡoʊldən",
+    "child": "doʊldən",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "A velar consonant moves forward to an alveolar place: /ɡ/ → [d]."
+  },
+  {
+    "word": "gooseberry",
+    "target": "ɡusbɛɹi",
+    "child": "dusbɛɹi",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "A velar consonant moves forward to an alveolar place: /ɡ/ → [d]."
+  },
+  {
+    "word": "grocery",
+    "target": "ɡɹoʊsɚi",
+    "child": "dɹoʊsɚi",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "A velar consonant moves forward to an alveolar place: /ɡ/ → [d]."
+  },
+  {
+    "word": "gallon",
+    "target": "ɡælən",
+    "child": "dælən",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "A velar consonant moves forward to an alveolar place: /ɡ/ → [d]."
+  },
+  {
+    "word": "goblin",
+    "target": "ɡɑblɪn",
+    "child": "dɑblɪn",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "A velar consonant moves forward to an alveolar place: /ɡ/ → [d]."
+  },
+  {
+    "word": "gathering",
+    "target": "ɡæðɚɪŋ",
+    "child": "dæðɚɪŋ",
+    "answer": "Fronting",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "A velar consonant moves forward to an alveolar place: /ɡ/ → [d]."
+  },
+  {
+    "word": "coconut",
+    "target": "koʊkənʌt",
+    "child": "toʊkənʌt",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "A velar consonant moves forward to an alveolar place: /k/ → [t]."
+  },
+  {
+    "word": "calendar",
+    "target": "kæləndɚ",
+    "child": "tæləndɚ",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "A velar consonant moves forward to an alveolar place: /k/ → [t]."
+  },
+  {
+    "word": "cucumber",
+    "target": "kjukəmbɚ",
+    "child": "tjukəmbɚ",
+    "answer": "Fronting",
+    "from": "k",
+    "to": "t",
+    "explain": "A velar consonant moves forward to an alveolar place: /k/ → [t]."
+  },
+  {
+    "word": "shortening",
+    "target": "ʃɔɹtənɪŋ",
+    "child": "sɔɹtənɪŋ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shaking",
+    "target": "ʃeɪkɪŋ",
+    "child": "seɪkɪŋ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shining",
+    "target": "ʃaɪnɪŋ",
+    "child": "saɪnɪŋ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shipping",
+    "target": "ʃɪpɪŋ",
+    "child": "sɪpɪŋ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shelter",
+    "target": "ʃɛltɚ",
+    "child": "sɛltɚ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shadows",
+    "target": "ʃædoʊz",
+    "child": "sædoʊz",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shopkeepers",
+    "target": "ʃɑpkipɚz",
+    "child": "sɑpkipɚz",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shivering",
+    "target": "ʃɪvɚɪŋ",
+    "child": "sɪvɚɪŋ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shallow",
+    "target": "ʃæloʊ",
+    "child": "sæloʊ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shortsighted",
+    "target": "ʃɔɹtsaɪtɪd",
+    "child": "sɔɹtsaɪtɪd",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shudder",
+    "target": "ʃʌdɚ",
+    "child": "sʌdɚ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shovel",
+    "target": "ʃʌvəl",
+    "child": "sʌvəl",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shuffling",
+    "target": "ʃʌflɪŋ",
+    "child": "sʌflɪŋ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shaving",
+    "target": "ʃeɪvɪŋ",
+    "child": "seɪvɪŋ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shooting",
+    "target": "ʃutɪŋ",
+    "child": "sutɪŋ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shampoo",
+    "target": "ʃæmpu",
+    "child": "sæmpu",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shopping",
+    "target": "ʃɑpɪŋ",
+    "child": "sɑpɪŋ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "shoulder",
+    "target": "ʃoʊldɚ",
+    "child": "soʊldɚ",
+    "answer": "Depalatalization",
+    "from": "ʃ",
+    "to": "s",
+    "explain": "A postalveolar fricative shifts to an alveolar fricative: /ʃ/ → [s]."
+  },
+  {
+    "word": "disease",
+    "target": "dɪziz",
+    "child": "ɡɪziz",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "different",
+    "target": "dɪfɚənt",
+    "child": "ɡɪfɚənt",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "terrible",
+    "target": "tɛɹəbəl",
+    "child": "kɛɹəbəl",
+    "answer": "Backing",
+    "from": "t",
+    "to": "k",
+    "explain": "An alveolar stop is produced at a velar place: /t/ → [k]."
+  },
+  {
+    "word": "daughter",
+    "target": "dɔtɚ",
+    "child": "ɡɔtɚ",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "divided",
+    "target": "dɪvaɪdɪd",
+    "child": "ɡɪvaɪdɪd",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "danger",
+    "target": "deɪndʒɚ",
+    "child": "ɡeɪndʒɚ",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "distance",
+    "target": "dɪstəns",
+    "child": "ɡɪstəns",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "division",
+    "target": "dɪvɪʒən",
+    "child": "ɡɪvɪʒən",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "desire",
+    "target": "dɪzaɪɚ",
+    "child": "ɡɪzaɪɚ",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "deeply",
+    "target": "dipli",
+    "child": "ɡipli",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "delight",
+    "target": "dɪlaɪt",
+    "child": "ɡɪlaɪt",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "domain",
+    "target": "doʊmeɪn",
+    "child": "ɡoʊmeɪn",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "decision",
+    "target": "dɪsɪʒən",
+    "child": "ɡɪsɪʒən",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "decided",
+    "target": "dɪsaɪdɪd",
+    "child": "ɡɪsaɪdɪd",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "dollars",
+    "target": "dɑlɚz",
+    "child": "ɡɑlɚz",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "daily",
+    "target": "deɪli",
+    "child": "ɡeɪli",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "dinosaur",
+    "target": "daɪnəsɔɹ",
+    "child": "ɡaɪnəsɔɹ",
+    "answer": "Backing",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "An alveolar stop is produced at a velar place: /d/ → [ɡ]."
+  },
+  {
+    "word": "telephone",
+    "target": "tɛləfoʊn",
+    "child": "kɛləfoʊn",
+    "answer": "Backing",
+    "from": "t",
+    "to": "k",
+    "explain": "An alveolar stop is produced at a velar place: /t/ → [k]."
+  },
+  {
+    "word": "tender",
+    "target": "tɛndɚ",
+    "child": "kɛndɚ",
+    "answer": "Backing",
+    "from": "t",
+    "to": "k",
+    "explain": "An alveolar stop is produced at a velar place: /t/ → [k]."
+  },
+  {
+    "word": "liberty",
+    "target": "lɪbɚti",
+    "child": "wɪbɚti",
+    "answer": "Gliding",
+    "from": "l",
+    "to": "w",
+    "explain": "The liquid /l/ is replaced by the glide [w]."
+  },
+  {
+    "word": "regular",
+    "target": "ɹɛɡjəlɚ",
+    "child": "wɛɡjəlɚ",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ is replaced by the glide [w]."
+  },
+  {
+    "word": "lemon",
+    "target": "lɛmən",
+    "child": "wɛmən",
+    "answer": "Gliding",
+    "from": "l",
+    "to": "w",
+    "explain": "The liquid /l/ is replaced by the glide [w]."
+  },
+  {
+    "word": "laundry",
+    "target": "lɔndɹi",
+    "child": "wɔndɹi",
+    "answer": "Gliding",
+    "from": "l",
+    "to": "w",
+    "explain": "The liquid /l/ is replaced by the glide [w]."
+  },
+  {
+    "word": "ribbon",
+    "target": "ɹɪbən",
+    "child": "wɪbən",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ is replaced by the glide [w]."
+  },
+  {
+    "word": "reason",
+    "target": "ɹizən",
+    "child": "wizən",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ is replaced by the glide [w]."
+  },
+  {
+    "word": "river",
+    "target": "ɹɪvɚ",
+    "child": "wɪvɚ",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ is replaced by the glide [w]."
+  },
+  {
+    "word": "rainy",
+    "target": "ɹeɪni",
+    "child": "weɪni",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ is replaced by the glide [w]."
+  },
+  {
+    "word": "running",
+    "target": "ɹʌnɪŋ",
+    "child": "wʌnɪŋ",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ is replaced by the glide [w]."
+  },
+  {
+    "word": "raccoon",
+    "target": "ɹækun",
+    "child": "wækun",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ is replaced by the glide [w]."
+  },
+  {
+    "word": "rainbow",
+    "target": "ɹeɪnboʊ",
+    "child": "weɪnboʊ",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ is replaced by the glide [w]."
+  },
+  {
+    "word": "lollipop",
+    "target": "lɑlipɑp",
+    "child": "wɑlipɑp",
+    "answer": "Gliding",
+    "from": "l",
+    "to": "w",
+    "explain": "The liquid /l/ is replaced by the glide [w]."
+  },
+  {
+    "word": "luggage",
+    "target": "lʌɡədʒ",
+    "child": "wʌɡədʒ",
+    "answer": "Gliding",
+    "from": "l",
+    "to": "w",
+    "explain": "The liquid /l/ is replaced by the glide [w]."
+  },
+  {
+    "word": "lateral",
+    "target": "lætɚəl",
+    "child": "wætɚəl",
+    "answer": "Gliding",
+    "from": "l",
+    "to": "w",
+    "explain": "The liquid /l/ is replaced by the glide [w]."
+  },
+  {
+    "word": "ruler",
+    "target": "ɹulɚ",
+    "child": "wulɚ",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ is replaced by the glide [w]."
+  },
+  {
+    "word": "roller",
+    "target": "ɹoʊlɚ",
+    "child": "woʊlɚ",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ is replaced by the glide [w]."
+  },
+  {
+    "word": "republic",
+    "target": "ɹipʌblək",
+    "child": "wipʌblək",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ is replaced by the glide [w]."
+  },
+  {
+    "word": "recess",
+    "target": "ɹɪsɛs",
+    "child": "wɪsɛs",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ is replaced by the glide [w]."
+  },
+  {
+    "word": "robin",
+    "target": "ɹɑbən",
+    "child": "wɑbən",
+    "answer": "Gliding",
+    "from": "ɹ",
+    "to": "w",
+    "explain": "The liquid /ɹ/ is replaced by the glide [w]."
+  },
+  {
+    "word": "elbow",
+    "target": "ɛlboʊ",
+    "child": "ɛʊboʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "pencil",
+    "target": "pɛnsəl",
+    "child": "pɛnsəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "purple",
+    "target": "pɝpəl",
+    "child": "pɝpəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "hospital",
+    "target": "hɑspɪtəl",
+    "child": "hɑspɪtəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "angle",
+    "target": "æŋɡəl",
+    "child": "æŋɡəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "tunnel",
+    "target": "tʌnəl",
+    "child": "tʌnəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "rattle",
+    "target": "ɹætəl",
+    "child": "ɹætəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "bubble",
+    "target": "bʌbəl",
+    "child": "bʌbəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "single",
+    "target": "sɪŋɡəl",
+    "child": "sɪŋɡəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "giggle",
+    "target": "ɡɪɡəl",
+    "child": "ɡɪɡəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "jungle",
+    "target": "dʒʌŋɡəl",
+    "child": "dʒʌŋɡəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "uncle",
+    "target": "ʌŋkəl",
+    "child": "ʌŋkəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "castle",
+    "target": "kæsəl",
+    "child": "kæsəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "sandal",
+    "target": "sændəl",
+    "child": "sændəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "practical",
+    "target": "pɹæktəkəl",
+    "child": "pɹæktəkəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "animal",
+    "target": "ænəməl",
+    "child": "ænəməʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "beautiful",
+    "target": "bjutəfəl",
+    "child": "bjutəfəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "bicycle",
+    "target": "baɪsɪkəl",
+    "child": "baɪsɪkəʊ",
+    "answer": "Vocalization",
+    "from": "l",
+    "to": "ʊ",
+    "explain": "The postvocalic /l/ is replaced by vowel [ʊ]."
+  },
+  {
+    "word": "specific",
+    "target": "spəsɪfɪk",
+    "child": "pəsɪfɪk",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /s/."
+  },
+  {
+    "word": "primary",
+    "target": "pɹaɪmɛɹi",
+    "child": "paɪmɛɹi",
+    "answer": "Cluster Reduction",
+    "from": "ɹ",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /ɹ/."
+  },
+  {
+    "word": "stomach",
+    "target": "stʌmək",
+    "child": "tʌmək",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /s/."
+  },
+  {
+    "word": "spaghetti",
+    "target": "spəɡɛti",
+    "child": "pəɡɛti",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /s/."
+  },
+  {
+    "word": "president",
+    "target": "pɹɛzədɛnt",
+    "child": "pɛzədɛnt",
+    "answer": "Cluster Reduction",
+    "from": "ɹ",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /ɹ/."
+  },
+  {
+    "word": "stapler",
+    "target": "steɪpəlɚ",
+    "child": "teɪpəlɚ",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /s/."
+  },
+  {
+    "word": "speaker",
+    "target": "spikɚ",
+    "child": "pikɚ",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /s/."
+  },
+  {
+    "word": "squirrel",
+    "target": "skwɝəl",
+    "child": "kwɝəl",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /s/."
+  },
+  {
+    "word": "sweater",
+    "target": "swɛtɚ",
+    "child": "wɛtɚ",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /s/."
+  },
+  {
+    "word": "snowman",
+    "target": "snoʊmæn",
+    "child": "noʊmæn",
+    "answer": "Cluster Reduction",
+    "from": "s",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /s/."
+  },
+  {
+    "word": "princess",
+    "target": "pɹɪnsɛs",
+    "child": "pɪnsɛs",
+    "answer": "Cluster Reduction",
+    "from": "ɹ",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /ɹ/."
+  },
+  {
+    "word": "present",
+    "target": "pɹɛzənt",
+    "child": "pɛzənt",
+    "answer": "Cluster Reduction",
+    "from": "ɹ",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /ɹ/."
+  },
+  {
+    "word": "plastic",
+    "target": "plæstɪk",
+    "child": "pæstɪk",
+    "answer": "Cluster Reduction",
+    "from": "l",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /l/."
+  },
+  {
+    "word": "blanket",
+    "target": "blæŋkət",
+    "child": "bæŋkət",
+    "answer": "Cluster Reduction",
+    "from": "l",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /l/."
+  },
+  {
+    "word": "flower",
+    "target": "flaʊɚ",
+    "child": "faʊɚ",
+    "answer": "Cluster Reduction",
+    "from": "l",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /l/."
+  },
+  {
+    "word": "gravity",
+    "target": "ɡɹævəti",
+    "child": "ɡævəti",
+    "answer": "Cluster Reduction",
+    "from": "ɹ",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /ɹ/."
+  },
+  {
+    "word": "tractor",
+    "target": "tɹæktɚ",
+    "child": "tæktɚ",
+    "answer": "Cluster Reduction",
+    "from": "ɹ",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /ɹ/."
+  },
+  {
+    "word": "dragon",
+    "target": "dɹæɡən",
+    "child": "dæɡən",
+    "answer": "Cluster Reduction",
+    "from": "ɹ",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /ɹ/."
+  },
+  {
+    "word": "criminal",
+    "target": "kɹɪmənəl",
+    "child": "kɪmənəl",
+    "answer": "Cluster Reduction",
+    "from": "ɹ",
+    "to": "",
+    "explain": "The initial consonant cluster is simplified by omitting /ɹ/."
+  },
+  {
+    "word": "panda",
+    "target": "pændə",
+    "child": "pænpæn",
+    "answer": "Reduplication",
+    "from": "də",
+    "to": "pæn",
+    "explain": "The first syllable /pæn/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "window",
+    "target": "wɪndoʊ",
+    "child": "wɪnwɪn",
+    "answer": "Reduplication",
+    "from": "doʊ",
+    "to": "wɪn",
+    "explain": "The first syllable /wɪn/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "muffin",
+    "target": "mʌfən",
+    "child": "mʌfmʌf",
+    "answer": "Reduplication",
+    "from": "ən",
+    "to": "mʌf",
+    "explain": "The first syllable /mʌf/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "wagon",
+    "target": "wæɡən",
+    "child": "wæɡwæɡ",
+    "answer": "Reduplication",
+    "from": "ən",
+    "to": "wæɡ",
+    "explain": "The first syllable /wæɡ/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "pillow",
+    "target": "pɪloʊ",
+    "child": "pɪpɪ",
+    "answer": "Reduplication",
+    "from": "loʊ",
+    "to": "pɪ",
+    "explain": "The first syllable /pɪ/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "robot",
+    "target": "ɹoʊbɑt",
+    "child": "ɹoʊɹoʊ",
+    "answer": "Reduplication",
+    "from": "bɑt",
+    "to": "ɹoʊ",
+    "explain": "The first syllable /ɹoʊ/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "pickle",
+    "target": "pɪkəl",
+    "child": "pɪkpɪk",
+    "answer": "Reduplication",
+    "from": "əl",
+    "to": "pɪk",
+    "explain": "The first syllable /pɪk/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "hippo",
+    "target": "hɪpoʊ",
+    "child": "hɪhɪ",
+    "answer": "Reduplication",
+    "from": "poʊ",
+    "to": "hɪ",
+    "explain": "The first syllable /hɪ/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "puddle",
+    "target": "pʌdəl",
+    "child": "pʌdpʌd",
+    "answer": "Reduplication",
+    "from": "əl",
+    "to": "pʌd",
+    "explain": "The first syllable /pʌd/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "honey",
+    "target": "hʌni",
+    "child": "hʌhʌ",
+    "answer": "Reduplication",
+    "from": "ni",
+    "to": "hʌ",
+    "explain": "The first syllable /hʌ/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "basket",
+    "target": "bæskət",
+    "child": "bæsbæs",
+    "answer": "Reduplication",
+    "from": "kət",
+    "to": "bæs",
+    "explain": "The first syllable /bæs/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "napkin",
+    "target": "næpkɪn",
+    "child": "næpnæp",
+    "answer": "Reduplication",
+    "from": "kɪn",
+    "to": "næp",
+    "explain": "The first syllable /næp/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "bingo",
+    "target": "bɪŋɡoʊ",
+    "child": "bɪŋbɪŋ",
+    "answer": "Reduplication",
+    "from": "ɡoʊ",
+    "to": "bɪŋ",
+    "explain": "The first syllable /bɪŋ/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "cannon",
+    "target": "kænən",
+    "child": "kækæ",
+    "answer": "Reduplication",
+    "from": "nən",
+    "to": "kæ",
+    "explain": "The first syllable /kæ/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "kangaroo",
+    "target": "kæŋɡɚu",
+    "child": "kæŋkæŋ",
+    "answer": "Reduplication",
+    "from": "ɡɚu",
+    "to": "kæŋ",
+    "explain": "The first syllable /kæŋ/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "monkey",
+    "target": "mʌŋki",
+    "child": "mʌŋmʌŋ",
+    "answer": "Reduplication",
+    "from": "ki",
+    "to": "mʌŋ",
+    "explain": "The first syllable /mʌŋ/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "zebra",
+    "target": "zibɹə",
+    "child": "zizi",
+    "answer": "Reduplication",
+    "from": "bɹə",
+    "to": "zi",
+    "explain": "The first syllable /zi/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "donut",
+    "target": "doʊnʌt",
+    "child": "doʊdoʊ",
+    "answer": "Reduplication",
+    "from": "nʌt",
+    "to": "doʊ",
+    "explain": "The first syllable /doʊ/ is repeated, replacing the remaining syllable(s)."
+  },
+  {
+    "word": "begin",
+    "target": "bɪˈɡɪn",
+    "child": "ˈɡɪn",
+    "answer": "Weak Syllable Deletion",
+    "from": "bɪ",
+    "to": "",
+    "explain": "The initial unstressed syllable /bɪ/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "become",
+    "target": "bɪˈkʌm",
+    "child": "ˈkʌm",
+    "answer": "Weak Syllable Deletion",
+    "from": "bɪ",
+    "to": "",
+    "explain": "The initial unstressed syllable /bɪ/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "believe",
+    "target": "bɪˈliv",
+    "child": "ˈliv",
+    "answer": "Weak Syllable Deletion",
+    "from": "bɪ",
+    "to": "",
+    "explain": "The initial unstressed syllable /bɪ/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "removal",
+    "target": "ɹɪˈmuvəl",
+    "child": "ˈmuvəl",
+    "answer": "Weak Syllable Deletion",
+    "from": "ɹɪ",
+    "to": "",
+    "explain": "The initial unstressed syllable /ɹɪ/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "below",
+    "target": "bɪˈloʊ",
+    "child": "ˈloʊ",
+    "answer": "Weak Syllable Deletion",
+    "from": "bɪ",
+    "to": "",
+    "explain": "The initial unstressed syllable /bɪ/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "attack",
+    "target": "əˈtæk",
+    "child": "ˈtæk",
+    "answer": "Weak Syllable Deletion",
+    "from": "ə",
+    "to": "",
+    "explain": "The initial unstressed syllable /ə/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "between",
+    "target": "bɪˈtwin",
+    "child": "ˈtwin",
+    "answer": "Weak Syllable Deletion",
+    "from": "bɪ",
+    "to": "",
+    "explain": "The initial unstressed syllable /bɪ/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "companion",
+    "target": "kəmˈpænjən",
+    "child": "ˈpænjən",
+    "answer": "Weak Syllable Deletion",
+    "from": "kəm",
+    "to": "",
+    "explain": "The initial unstressed syllable /kəm/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "avoid",
+    "target": "əˈvɔɪd",
+    "child": "ˈvɔɪd",
+    "answer": "Weak Syllable Deletion",
+    "from": "ə",
+    "to": "",
+    "explain": "The initial unstressed syllable /ə/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "police",
+    "target": "pəˈlis",
+    "child": "ˈlis",
+    "answer": "Weak Syllable Deletion",
+    "from": "pə",
+    "to": "",
+    "explain": "The initial unstressed syllable /pə/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "defeat",
+    "target": "dɪˈfit",
+    "child": "ˈfit",
+    "answer": "Weak Syllable Deletion",
+    "from": "dɪ",
+    "to": "",
+    "explain": "The initial unstressed syllable /dɪ/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "convention",
+    "target": "kənˈvɛnʃən",
+    "child": "ˈvɛnʃən",
+    "answer": "Weak Syllable Deletion",
+    "from": "kən",
+    "to": "",
+    "explain": "The initial unstressed syllable /kən/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "supply",
+    "target": "səˈplaɪ",
+    "child": "ˈplaɪ",
+    "answer": "Weak Syllable Deletion",
+    "from": "sə",
+    "to": "",
+    "explain": "The initial unstressed syllable /sə/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "surprise",
+    "target": "sɚˈpɹaɪz",
+    "child": "ˈpɹaɪz",
+    "answer": "Weak Syllable Deletion",
+    "from": "sɚ",
+    "to": "",
+    "explain": "The initial unstressed syllable /sɚ/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "remember",
+    "target": "ɹɪˈmɛmbɚ",
+    "child": "ˈmɛmbɚ",
+    "answer": "Weak Syllable Deletion",
+    "from": "ɹɪ",
+    "to": "",
+    "explain": "The initial unstressed syllable /ɹɪ/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "computer",
+    "target": "kəmˈpjutɚ",
+    "child": "ˈpjutɚ",
+    "answer": "Weak Syllable Deletion",
+    "from": "kəm",
+    "to": "",
+    "explain": "The initial unstressed syllable /kəm/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "consider",
+    "target": "kənˈsɪdɚ",
+    "child": "ˈsɪdɚ",
+    "answer": "Weak Syllable Deletion",
+    "from": "kən",
+    "to": "",
+    "explain": "The initial unstressed syllable /kən/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "forget",
+    "target": "fɚˈɡɛt",
+    "child": "ˈɡɛt",
+    "answer": "Weak Syllable Deletion",
+    "from": "fɚ",
+    "to": "",
+    "explain": "The initial unstressed syllable /fɚ/ is omitted; the stressed part remains."
+  },
+  {
+    "word": "sunset",
+    "target": "sʌnsɛt",
+    "child": "sʌnsɛ",
+    "answer": "Final Consonant Deletion",
+    "from": "t",
+    "to": "",
+    "explain": "The final consonant /t/ is omitted."
+  },
+  {
+    "word": "carpet",
+    "target": "kɑɹpət",
+    "child": "kɑɹpə",
+    "answer": "Final Consonant Deletion",
+    "from": "t",
+    "to": "",
+    "explain": "The final consonant /t/ is omitted."
+  },
+  {
+    "word": "falcon",
+    "target": "fælkən",
+    "child": "fælkə",
+    "answer": "Final Consonant Deletion",
+    "from": "n",
+    "to": "",
+    "explain": "The final consonant /n/ is omitted."
+  },
+  {
+    "word": "planet",
+    "target": "plænət",
+    "child": "plænə",
+    "answer": "Final Consonant Deletion",
+    "from": "t",
+    "to": "",
+    "explain": "The final consonant /t/ is omitted."
+  },
+  {
+    "word": "rocket",
+    "target": "ɹɑkət",
+    "child": "ɹɑkə",
+    "answer": "Final Consonant Deletion",
+    "from": "t",
+    "to": "",
+    "explain": "The final consonant /t/ is omitted."
+  },
+  {
+    "word": "triangle",
+    "target": "tɹaɪæŋɡəl",
+    "child": "tɹaɪæŋɡə",
+    "answer": "Final Consonant Deletion",
+    "from": "l",
+    "to": "",
+    "explain": "The final consonant /l/ is omitted."
+  },
+  {
+    "word": "magnet",
+    "target": "mæɡnət",
+    "child": "mæɡnə",
+    "answer": "Final Consonant Deletion",
+    "from": "t",
+    "to": "",
+    "explain": "The final consonant /t/ is omitted."
+  },
+  {
+    "word": "snowball",
+    "target": "snoʊbɔl",
+    "child": "snoʊbɔ",
+    "answer": "Final Consonant Deletion",
+    "from": "l",
+    "to": "",
+    "explain": "The final consonant /l/ is omitted."
+  },
+  {
+    "word": "skeleton",
+    "target": "skɛlətən",
+    "child": "skɛlətə",
+    "answer": "Final Consonant Deletion",
+    "from": "n",
+    "to": "",
+    "explain": "The final consonant /n/ is omitted."
+  },
+  {
+    "word": "cactus",
+    "target": "kæktəs",
+    "child": "kæktə",
+    "answer": "Final Consonant Deletion",
+    "from": "s",
+    "to": "",
+    "explain": "The final consonant /s/ is omitted."
+  },
+  {
+    "word": "peanut",
+    "target": "pinət",
+    "child": "pinə",
+    "answer": "Final Consonant Deletion",
+    "from": "t",
+    "to": "",
+    "explain": "The final consonant /t/ is omitted."
+  },
+  {
+    "word": "helmet",
+    "target": "hɛlmət",
+    "child": "hɛlmə",
+    "answer": "Final Consonant Deletion",
+    "from": "t",
+    "to": "",
+    "explain": "The final consonant /t/ is omitted."
+  },
+  {
+    "word": "wallet",
+    "target": "wɔlət",
+    "child": "wɔlə",
+    "answer": "Final Consonant Deletion",
+    "from": "t",
+    "to": "",
+    "explain": "The final consonant /t/ is omitted."
+  },
+  {
+    "word": "pumpkin",
+    "target": "pʌmpkɪn",
+    "child": "pʌmpkɪ",
+    "answer": "Final Consonant Deletion",
+    "from": "n",
+    "to": "",
+    "explain": "The final consonant /n/ is omitted."
+  },
+  {
+    "word": "sandwich",
+    "target": "sændwɪtʃ",
+    "child": "sændwɪ",
+    "answer": "Final Consonant Deletion",
+    "from": "tʃ",
+    "to": "",
+    "explain": "The final consonant /tʃ/ is omitted."
+  },
+  {
+    "word": "melon",
+    "target": "mɛlən",
+    "child": "mɛlə",
+    "answer": "Final Consonant Deletion",
+    "from": "n",
+    "to": "",
+    "explain": "The final consonant /n/ is omitted."
+  },
+  {
+    "word": "elephant",
+    "target": "ɛləfənt",
+    "child": "ɛləfən",
+    "answer": "Final Consonant Deletion",
+    "from": "t",
+    "to": "",
+    "explain": "The final consonant /t/ is omitted."
+  },
+  {
+    "word": "dolphin",
+    "target": "dɑlfən",
+    "child": "dɑlfə",
+    "answer": "Final Consonant Deletion",
+    "from": "n",
+    "to": "",
+    "explain": "The final consonant /n/ is omitted."
+  },
+  {
+    "word": "cabin",
+    "target": "kæbən",
+    "child": "kæbə",
+    "answer": "Final Consonant Deletion",
+    "from": "n",
+    "to": "",
+    "explain": "The final consonant /n/ is omitted."
+  },
+  {
+    "word": "number",
+    "target": "nʌmbɚ",
+    "child": "mʌmbɚ",
+    "answer": "Labial Assimilation",
+    "from": "n",
+    "to": "m",
+    "explain": "The initial /n/ becomes labial [m], influenced by another labial in the word."
+  },
+  {
+    "word": "topic",
+    "target": "tɑpɪk",
+    "child": "pɑpɪk",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "The initial /t/ becomes labial [p], influenced by another labial in the word."
+  },
+  {
+    "word": "tulip",
+    "target": "tuləp",
+    "child": "puləp",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "The initial /t/ becomes labial [p], influenced by another labial in the word."
+  },
+  {
+    "word": "temperature",
+    "target": "tɛmpɹətʃɚ",
+    "child": "pɛmpɹətʃɚ",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "The initial /t/ becomes labial [p], influenced by another labial in the word."
+  },
+  {
+    "word": "topping",
+    "target": "tɑpɪŋ",
+    "child": "pɑpɪŋ",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "The initial /t/ becomes labial [p], influenced by another labial in the word."
+  },
+  {
+    "word": "tippy",
+    "target": "tɪpi",
+    "child": "pɪpi",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "The initial /t/ becomes labial [p], influenced by another labial in the word."
+  },
+  {
+    "word": "timber",
+    "target": "tɪmbɚ",
+    "child": "pɪmbɚ",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "The initial /t/ becomes labial [p], influenced by another labial in the word."
+  },
+  {
+    "word": "tumble",
+    "target": "tʌmbəl",
+    "child": "pʌmbəl",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "The initial /t/ becomes labial [p], influenced by another labial in the word."
+  },
+  {
+    "word": "tummy",
+    "target": "tʌmi",
+    "child": "pʌmi",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "The initial /t/ becomes labial [p], influenced by another labial in the word."
+  },
+  {
+    "word": "teapot",
+    "target": "tipɑt",
+    "child": "pipɑt",
+    "answer": "Labial Assimilation",
+    "from": "t",
+    "to": "p",
+    "explain": "The initial /t/ becomes labial [p], influenced by another labial in the word."
+  },
+  {
+    "word": "dumbbell",
+    "target": "dʌmbɛl",
+    "child": "bʌmbɛl",
+    "answer": "Labial Assimilation",
+    "from": "d",
+    "to": "b",
+    "explain": "The initial /d/ becomes labial [b], influenced by another labial in the word."
+  },
+  {
+    "word": "double",
+    "target": "dʌbəl",
+    "child": "bʌbəl",
+    "answer": "Labial Assimilation",
+    "from": "d",
+    "to": "b",
+    "explain": "The initial /d/ becomes labial [b], influenced by another labial in the word."
+  },
+  {
+    "word": "december",
+    "target": "dɪsɛmbɚ",
+    "child": "bɪsɛmbɚ",
+    "answer": "Labial Assimilation",
+    "from": "d",
+    "to": "b",
+    "explain": "The initial /d/ becomes labial [b], influenced by another labial in the word."
+  },
+  {
+    "word": "dimple",
+    "target": "dɪmpəl",
+    "child": "bɪmpəl",
+    "answer": "Labial Assimilation",
+    "from": "d",
+    "to": "b",
+    "explain": "The initial /d/ becomes labial [b], influenced by another labial in the word."
+  },
+  {
+    "word": "copper",
+    "target": "kɑpɚ",
+    "child": "pɑpɚ",
+    "answer": "Labial Assimilation",
+    "from": "k",
+    "to": "p",
+    "explain": "The initial /k/ becomes labial [p], influenced by another labial in the word."
+  },
+  {
+    "word": "campus",
+    "target": "kæmpəs",
+    "child": "pæmpəs",
+    "answer": "Labial Assimilation",
+    "from": "k",
+    "to": "p",
+    "explain": "The initial /k/ becomes labial [p], influenced by another labial in the word."
+  },
+  {
+    "word": "cabbage",
+    "target": "kæbədʒ",
+    "child": "pæbədʒ",
+    "answer": "Labial Assimilation",
+    "from": "k",
+    "to": "p",
+    "explain": "The initial /k/ becomes labial [p], influenced by another labial in the word."
+  },
+  {
+    "word": "company",
+    "target": "kʌmpəni",
+    "child": "pʌmpəni",
+    "answer": "Labial Assimilation",
+    "from": "k",
+    "to": "p",
+    "explain": "The initial /k/ becomes labial [p], influenced by another labial in the word."
+  },
+  {
+    "word": "comedy",
+    "target": "kɑmədi",
+    "child": "pɑmədi",
+    "answer": "Labial Assimilation",
+    "from": "k",
+    "to": "p",
+    "explain": "The initial /k/ becomes labial [p], influenced by another labial in the word."
+  },
+  {
+    "word": "pudding",
+    "target": "pʊdɪŋ",
+    "child": "tʊdɪŋ",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "The initial /p/ becomes alveolar [t], influenced by another alveolar in the word."
+  },
+  {
+    "word": "position",
+    "target": "pəzɪʃən",
+    "child": "təzɪʃən",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "The initial /p/ becomes alveolar [t], influenced by another alveolar in the word."
+  },
+  {
+    "word": "paddle",
+    "target": "pædəl",
+    "child": "tædəl",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "The initial /p/ becomes alveolar [t], influenced by another alveolar in the word."
+  },
+  {
+    "word": "puzzle",
+    "target": "pʌzəl",
+    "child": "tʌzəl",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "The initial /p/ becomes alveolar [t], influenced by another alveolar in the word."
+  },
+  {
+    "word": "pocket",
+    "target": "pɑkət",
+    "child": "tɑkət",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "The initial /p/ becomes alveolar [t], influenced by another alveolar in the word."
+  },
+  {
+    "word": "piston",
+    "target": "pɪstən",
+    "child": "tɪstən",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "The initial /p/ becomes alveolar [t], influenced by another alveolar in the word."
+  },
+  {
+    "word": "pottery",
+    "target": "pɑtɚi",
+    "child": "tɑtɚi",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "The initial /p/ becomes alveolar [t], influenced by another alveolar in the word."
+  },
+  {
+    "word": "battery",
+    "target": "bætɚi",
+    "child": "dætɚi",
+    "answer": "Alveolar Assimilation",
+    "from": "b",
+    "to": "d",
+    "explain": "The initial /b/ becomes alveolar [d], influenced by another alveolar in the word."
+  },
+  {
+    "word": "popular",
+    "target": "pɑpjəlɚ",
+    "child": "tɑpjəlɚ",
+    "answer": "Alveolar Assimilation",
+    "from": "p",
+    "to": "t",
+    "explain": "The initial /p/ becomes alveolar [t], influenced by another alveolar in the word."
+  },
+  {
+    "word": "balance",
+    "target": "bæləns",
+    "child": "dæləns",
+    "answer": "Alveolar Assimilation",
+    "from": "b",
+    "to": "d",
+    "explain": "The initial /b/ becomes alveolar [d], influenced by another alveolar in the word."
+  },
+  {
+    "word": "bacon",
+    "target": "beɪkən",
+    "child": "deɪkən",
+    "answer": "Alveolar Assimilation",
+    "from": "b",
+    "to": "d",
+    "explain": "The initial /b/ becomes alveolar [d], influenced by another alveolar in the word."
+  },
+  {
+    "word": "ballet",
+    "target": "bæleɪ",
+    "child": "dæleɪ",
+    "answer": "Alveolar Assimilation",
+    "from": "b",
+    "to": "d",
+    "explain": "The initial /b/ becomes alveolar [d], influenced by another alveolar in the word."
+  },
+  {
+    "word": "canyon",
+    "target": "kænjən",
+    "child": "tænjən",
+    "answer": "Alveolar Assimilation",
+    "from": "k",
+    "to": "t",
+    "explain": "The initial /k/ becomes alveolar [t], influenced by another alveolar in the word."
+  },
+  {
+    "word": "cattle",
+    "target": "kætəl",
+    "child": "tætəl",
+    "answer": "Alveolar Assimilation",
+    "from": "k",
+    "to": "t",
+    "explain": "The initial /k/ becomes alveolar [t], influenced by another alveolar in the word."
+  },
+  {
+    "word": "gallery",
+    "target": "ɡælɚi",
+    "child": "dælɚi",
+    "answer": "Alveolar Assimilation",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "The initial /ɡ/ becomes alveolar [d], influenced by another alveolar in the word."
+  },
+  {
+    "word": "gadget",
+    "target": "ɡædʒət",
+    "child": "dædʒət",
+    "answer": "Alveolar Assimilation",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "The initial /ɡ/ becomes alveolar [d], influenced by another alveolar in the word."
+  },
+  {
+    "word": "galaxy",
+    "target": "ɡæləksi",
+    "child": "dæləksi",
+    "answer": "Alveolar Assimilation",
+    "from": "ɡ",
+    "to": "d",
+    "explain": "The initial /ɡ/ becomes alveolar [d], influenced by another alveolar in the word."
+  },
+  {
+    "word": "barrel",
+    "target": "bæɹəl",
+    "child": "dæɹəl",
+    "answer": "Alveolar Assimilation",
+    "from": "b",
+    "to": "d",
+    "explain": "The initial /b/ becomes alveolar [d], influenced by another alveolar in the word."
+  },
+  {
+    "word": "budget",
+    "target": "bʌdʒɪt",
+    "child": "dʌdʒɪt",
+    "answer": "Alveolar Assimilation",
+    "from": "b",
+    "to": "d",
+    "explain": "The initial /b/ becomes alveolar [d], influenced by another alveolar in the word."
+  },
+  {
+    "word": "technical",
+    "target": "tɛknɪkəl",
+    "child": "kɛknɪkəl",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "The initial /t/ becomes velar [k], influenced by another velar in the word."
+  },
+  {
+    "word": "direction",
+    "target": "dɚɛkʃən",
+    "child": "ɡɚɛkʃən",
+    "answer": "Velar Assimilation",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "The initial /d/ becomes velar [ɡ], influenced by another velar in the word."
+  },
+  {
+    "word": "document",
+    "target": "dɑkjəmɛnt",
+    "child": "ɡɑkjəmɛnt",
+    "answer": "Velar Assimilation",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "The initial /d/ becomes velar [ɡ], influenced by another velar in the word."
+  },
+  {
+    "word": "talking",
+    "target": "tɔkɪŋ",
+    "child": "kɔkɪŋ",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "The initial /t/ becomes velar [k], influenced by another velar in the word."
+  },
+  {
+    "word": "taking",
+    "target": "teɪkɪŋ",
+    "child": "keɪkɪŋ",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "The initial /t/ becomes velar [k], influenced by another velar in the word."
+  },
+  {
+    "word": "ticking",
+    "target": "tɪkɪŋ",
+    "child": "kɪkɪŋ",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "The initial /t/ becomes velar [k], influenced by another velar in the word."
+  },
+  {
+    "word": "ticker",
+    "target": "tɪkɚ",
+    "child": "kɪkɚ",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "The initial /t/ becomes velar [k], influenced by another velar in the word."
+  },
+  {
+    "word": "tango",
+    "target": "tæŋɡoʊ",
+    "child": "kæŋɡoʊ",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "The initial /t/ becomes velar [k], influenced by another velar in the word."
+  },
+  {
+    "word": "toggle",
+    "target": "tɑɡəl",
+    "child": "kɑɡəl",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "The initial /t/ becomes velar [k], influenced by another velar in the word."
+  },
+  {
+    "word": "target",
+    "target": "tɑɹɡət",
+    "child": "kɑɹɡət",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "The initial /t/ becomes velar [k], influenced by another velar in the word."
+  },
+  {
+    "word": "tugboat",
+    "target": "tʌɡboʊt",
+    "child": "kʌɡboʊt",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "The initial /t/ becomes velar [k], influenced by another velar in the word."
+  },
+  {
+    "word": "tucking",
+    "target": "tʌkɪŋ",
+    "child": "kʌkɪŋ",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "The initial /t/ becomes velar [k], influenced by another velar in the word."
+  },
+  {
+    "word": "tickle",
+    "target": "tɪkəl",
+    "child": "kɪkəl",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "The initial /t/ becomes velar [k], influenced by another velar in the word."
+  },
+  {
+    "word": "typical",
+    "target": "tɪpəkəl",
+    "child": "kɪpəkəl",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "The initial /t/ becomes velar [k], influenced by another velar in the word."
+  },
+  {
+    "word": "teaching",
+    "target": "titʃɪŋ",
+    "child": "kitʃɪŋ",
+    "answer": "Velar Assimilation",
+    "from": "t",
+    "to": "k",
+    "explain": "The initial /t/ becomes velar [k], influenced by another velar in the word."
+  },
+  {
+    "word": "digging",
+    "target": "dɪɡɪŋ",
+    "child": "ɡɪɡɪŋ",
+    "answer": "Velar Assimilation",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "The initial /d/ becomes velar [ɡ], influenced by another velar in the word."
+  },
+  {
+    "word": "dagger",
+    "target": "dæɡɚ",
+    "child": "ɡæɡɚ",
+    "answer": "Velar Assimilation",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "The initial /d/ becomes velar [ɡ], influenced by another velar in the word."
+  },
+  {
+    "word": "donkey",
+    "target": "dɑŋki",
+    "child": "ɡɑŋki",
+    "answer": "Velar Assimilation",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "The initial /d/ becomes velar [ɡ], influenced by another velar in the word."
+  },
+  {
+    "word": "doctor",
+    "target": "dɑktɚ",
+    "child": "ɡɑktɚ",
+    "answer": "Velar Assimilation",
+    "from": "d",
+    "to": "ɡ",
+    "explain": "The initial /d/ becomes velar [ɡ], influenced by another velar in the word."
+  },
+  {
+    "word": "paper",
+    "target": "peɪpɚ",
+    "child": "beɪpɚ",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "The initial voiceless /p/ becomes voiced [b] before a vowel."
+  },
+  {
+    "word": "possible",
+    "target": "pɑsəbəl",
+    "child": "bɑsəbəl",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "The initial voiceless /p/ becomes voiced [b] before a vowel."
+  },
+  {
+    "word": "pigeon",
+    "target": "pɪdʒən",
+    "child": "bɪdʒən",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "The initial voiceless /p/ becomes voiced [b] before a vowel."
+  },
+  {
+    "word": "pepper",
+    "target": "pɛpɚ",
+    "child": "bɛpɚ",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "The initial voiceless /p/ becomes voiced [b] before a vowel."
+  },
+  {
+    "word": "piano",
+    "target": "piænoʊ",
+    "child": "biænoʊ",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "The initial voiceless /p/ becomes voiced [b] before a vowel."
+  },
+  {
+    "word": "pizza",
+    "target": "pitsə",
+    "child": "bitsə",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "The initial voiceless /p/ becomes voiced [b] before a vowel."
+  },
+  {
+    "word": "people",
+    "target": "pipəl",
+    "child": "bipəl",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "The initial voiceless /p/ becomes voiced [b] before a vowel."
+  },
+  {
+    "word": "penguin",
+    "target": "pɛŋɡwən",
+    "child": "bɛŋɡwən",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "The initial voiceless /p/ becomes voiced [b] before a vowel."
+  },
+  {
+    "word": "penny",
+    "target": "pɛni",
+    "child": "bɛni",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "The initial voiceless /p/ becomes voiced [b] before a vowel."
+  },
+  {
+    "word": "petal",
+    "target": "pɛtəl",
+    "child": "bɛtəl",
+    "answer": "Prevocalic Voicing",
+    "from": "p",
+    "to": "b",
+    "explain": "The initial voiceless /p/ becomes voiced [b] before a vowel."
+  },
+  {
+    "word": "teacher",
+    "target": "titʃɚ",
+    "child": "ditʃɚ",
+    "answer": "Prevocalic Voicing",
+    "from": "t",
+    "to": "d",
+    "explain": "The initial voiceless /t/ becomes voiced [d] before a vowel."
+  },
+  {
+    "word": "tissue",
+    "target": "tɪsju",
+    "child": "dɪsju",
+    "answer": "Prevocalic Voicing",
+    "from": "t",
+    "to": "d",
+    "explain": "The initial voiceless /t/ becomes voiced [d] before a vowel."
+  },
+  {
+    "word": "tendency",
+    "target": "tɛndənsi",
+    "child": "dɛndənsi",
+    "answer": "Prevocalic Voicing",
+    "from": "t",
+    "to": "d",
+    "explain": "The initial voiceless /t/ becomes voiced [d] before a vowel."
+  },
+  {
+    "word": "cousin",
+    "target": "kʌzən",
+    "child": "ɡʌzən",
+    "answer": "Prevocalic Voicing",
+    "from": "k",
+    "to": "ɡ",
+    "explain": "The initial voiceless /k/ becomes voiced [ɡ] before a vowel."
+  },
+  {
+    "word": "color",
+    "target": "kʌlɚ",
+    "child": "ɡʌlɚ",
+    "answer": "Prevocalic Voicing",
+    "from": "k",
+    "to": "ɡ",
+    "explain": "The initial voiceless /k/ becomes voiced [ɡ] before a vowel."
+  },
+  {
+    "word": "family",
+    "target": "fæməli",
+    "child": "væməli",
+    "answer": "Prevocalic Voicing",
+    "from": "f",
+    "to": "v",
+    "explain": "The initial voiceless /f/ becomes voiced [v] before a vowel."
+  },
+  {
+    "word": "ferry",
+    "target": "fɛɹi",
+    "child": "vɛɹi",
+    "answer": "Prevocalic Voicing",
+    "from": "f",
+    "to": "v",
+    "explain": "The initial voiceless /f/ becomes voiced [v] before a vowel."
+  },
+  {
+    "word": "silly",
+    "target": "sɪli",
+    "child": "zɪli",
+    "answer": "Prevocalic Voicing",
+    "from": "s",
+    "to": "z",
+    "explain": "The initial voiceless /s/ becomes voiced [z] before a vowel."
+  },
+  {
+    "word": "sensation",
+    "target": "sɛnseɪʃən",
+    "child": "zɛnseɪʃən",
+    "answer": "Prevocalic Voicing",
+    "from": "s",
+    "to": "z",
+    "explain": "The initial voiceless /s/ becomes voiced [z] before a vowel."
+  },
+  {
+    "word": "united",
+    "target": "junaɪtɪd",
+    "child": "junaɪtɪt",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "The word-final voiced /d/ becomes voiceless [t]."
+  },
+  {
+    "word": "lizard",
+    "target": "lɪzɚd",
+    "child": "lɪzɚt",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "The word-final voiced /d/ becomes voiceless [t]."
+  },
+  {
+    "word": "wizard",
+    "target": "wɪzɚd",
+    "child": "wɪzɚt",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "The word-final voiced /d/ becomes voiceless [t]."
+  },
+  {
+    "word": "liquid",
+    "target": "lɪkwəd",
+    "child": "lɪkwət",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "The word-final voiced /d/ becomes voiceless [t]."
+  },
+  {
+    "word": "forward",
+    "target": "fɔɹwɚd",
+    "child": "fɔɹwɚt",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "The word-final voiced /d/ becomes voiceless [t]."
+  },
+  {
+    "word": "cupboard",
+    "target": "kʌbɚd",
+    "child": "kʌbɚt",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "The word-final voiced /d/ becomes voiceless [t]."
+  },
+  {
+    "word": "backyard",
+    "target": "bækjɑɹd",
+    "child": "bækjɑɹt",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "The word-final voiced /d/ becomes voiceless [t]."
+  },
+  {
+    "word": "onward",
+    "target": "ɔnwɚd",
+    "child": "ɔnwɚt",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "The word-final voiced /d/ becomes voiceless [t]."
+  },
+  {
+    "word": "mustard",
+    "target": "mʌstɚd",
+    "child": "mʌstɚt",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "The word-final voiced /d/ becomes voiceless [t]."
+  },
+  {
+    "word": "pyramid",
+    "target": "pɪɹəmɪd",
+    "child": "pɪɹəmɪt",
+    "answer": "Devoicing",
+    "from": "d",
+    "to": "t",
+    "explain": "The word-final voiced /d/ becomes voiceless [t]."
+  },
+  {
+    "word": "bulldog",
+    "target": "bʊldɔɡ",
+    "child": "bʊldɔk",
+    "answer": "Devoicing",
+    "from": "ɡ",
+    "to": "k",
+    "explain": "The word-final voiced /ɡ/ becomes voiceless [k]."
+  },
+  {
+    "word": "hotdog",
+    "target": "hɑtdɔɡ",
+    "child": "hɑtdɔk",
+    "answer": "Devoicing",
+    "from": "ɡ",
+    "to": "k",
+    "explain": "The word-final voiced /ɡ/ becomes voiceless [k]."
+  },
+  {
+    "word": "ladybug",
+    "target": "leɪdibʌɡ",
+    "child": "leɪdibʌk",
+    "answer": "Devoicing",
+    "from": "ɡ",
+    "to": "k",
+    "explain": "The word-final voiced /ɡ/ becomes voiceless [k]."
+  },
+  {
+    "word": "catalog",
+    "target": "kætəlɔɡ",
+    "child": "kætəlɔk",
+    "answer": "Devoicing",
+    "from": "ɡ",
+    "to": "k",
+    "explain": "The word-final voiced /ɡ/ becomes voiceless [k]."
+  },
+  {
+    "word": "hedgehog",
+    "target": "hɛdʒhɑɡ",
+    "child": "hɛdʒhɑk",
+    "answer": "Devoicing",
+    "from": "ɡ",
+    "to": "k",
+    "explain": "The word-final voiced /ɡ/ becomes voiceless [k]."
+  },
+  {
+    "word": "otherwise",
+    "target": "ʌðɚwaɪz",
+    "child": "ʌðɚwaɪs",
+    "answer": "Devoicing",
+    "from": "z",
+    "to": "s",
+    "explain": "The word-final voiced /z/ becomes voiceless [s]."
+  },
+  {
+    "word": "creative",
+    "target": "kɹieɪtɪv",
+    "child": "kɹieɪtɪf",
+    "answer": "Devoicing",
+    "from": "v",
+    "to": "f",
+    "explain": "The word-final voiced /v/ becomes voiceless [f]."
+  },
+  {
+    "word": "massive",
+    "target": "mæsɪv",
+    "child": "mæsɪf",
+    "answer": "Devoicing",
+    "from": "v",
+    "to": "f",
+    "explain": "The word-final voiced /v/ becomes voiceless [f]."
+  },
+  {
+    "word": "buses",
+    "target": "bʌsɪz",
+    "child": "bʌsɪs",
+    "answer": "Devoicing",
+    "from": "z",
+    "to": "s",
+    "explain": "The word-final voiced /z/ becomes voiceless [s]."
+  }
+];
+const processQs=[...originalProcessQs,...advancedProcessQs];
+
 // Extra applications allow several valid process choices for a given word.
 // Each application is checked against the actual constructed IPA form.
 const consonantSet=new Set(consonants.map(c=>c[0]));
@@ -3251,6 +5971,13 @@ function validProcessApplication(a){
 }
 // A malformed curated example is a content bug, not a practice question.
 const invalidCuratedExamples=processQs.filter(q=>!validProcessApplication(q));
+if(processWordBanksValidationError())console.warn('Word-bank counts or overlaps need review.');
+function processWordBanksValidationError(){
+ const original=new Set(originalProcessQs.map(q=>q.word));
+ const advanced=new Set(advancedProcessQs.map(q=>q.word));
+ return original.size!==300||advanced.size!==300||processQs.length!==600||
+   [...original].some(word=>advanced.has(word));
+}
 if(invalidCuratedExamples.length)console.warn('Curated phonology examples need review:',invalidCuratedExamples);
 const generatedProcessApplications=processQs.flatMap(generateWordApplications).filter(validProcessApplication);
 const processApplications=[...processQs.filter(validProcessApplication),...generatedProcessApplications];
@@ -3304,7 +6031,9 @@ function normalizeTranscription(value){
 // substitution for stressed vowels, monosyllabic "key", or diphthongs.
 const happyVowelWords=new Set([
  'baby','cookie','cherry','jelly','shiny','daisy','bunny','puppy',
- 'mommy','daddy','kitty','doggy','teddy','happy','coffee','money','pony'
+ 'mommy','daddy','kitty','doggy','teddy','happy','coffee','money','pony',
+ // Unstressed word-final /i/ from the advanced two-/three-syllable bank.
+ 'very','city','finally','sympathy','victory','journey','charity','jealousy','country','candy','gummy','gooseberry','grocery','deeply','daily','laundry','rainy','primary','spaghetti','gravity','honey','monkey','tippy','tummy','comedy','pottery','battery','gallery','galaxy','donkey','penny','tendency','family','ferry','silly'
 ]);
 function acceptedTranscription(response,expected,word){
  const actual=normalizeTranscription(response),reference=normalizeTranscription(expected);
@@ -3603,8 +6332,18 @@ function currentQ(){return processQs[procQuestionIndex]}
 // Refreshes also count as displayed words even when the question was skipped.
 // Exclude malformed future additions before question selection, too (not only
 // from the list of applicable processes). Currently all 300 examples qualify.
-const processWordBank=[...new Set(processQs.filter(validProcessApplication).map(q=>q.word))];
-function unusedProcessWords(){return processWordBank.filter(word=>!procUsedWords.has(word));}
+const processWordBanks={
+ original:[...new Set(originalProcessQs.filter(validProcessApplication).map(q=>q.word))],
+ advanced:[...new Set(advancedProcessQs.filter(validProcessApplication).map(q=>q.word))],
+ combined:[...new Set(processQs.filter(validProcessApplication).map(q=>q.word))]
+};
+const processBankNames={original:'300 original words',advanced:'300 advanced words · 2–3 syllables',combined:'600 words · mixed difficulty'};
+function currentProcessBank(){return $("proc-word-bank").value||'original';}
+function unusedProcessWords(){return processWordBanks[currentProcessBank()].filter(word=>!procUsedWords.has(word));}
+function updateProcessBankSummary(){
+ const bank=currentProcessBank();
+ $("proc-bank-summary").textContent=processBankNames[bank];
+}
 function selectUnseenProcessWord(){
  const available=unusedProcessWords();
  if(!available.length)return false;
@@ -3853,6 +6592,7 @@ function finishProcessRound(){
 function startProcessRound(){
  procIndex=0;procScore=0;procHistory=[];procUsedWords=new Set();
  hideReview("proc");
+ updateProcessBankSummary();
  if(selectUnseenProcessWord())renderProcess();
 }
 // Keep the current word/process visible when the learner advances from the
@@ -3868,6 +6608,7 @@ $("proc-next").onclick=()=>{
 };
 $("proc-reset").onclick=startProcessRound;
 $("proc-mode").onchange=startProcessRound;
+$("proc-word-bank").onchange=()=>{startProcessRound();scrollToProcessPrompt();};
 startInventoryRound();startProcessRound();
 </script>
 </body>
