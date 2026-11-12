@@ -10,6 +10,7 @@ A free, browser-based phonology practice website with a Wisconsin-inspired dark 
 
 - **Audited IPA practice:** Removed word-initial [ŋ] example errors and filters invalid generated applications. In the transcription mode, accepts appropriate unstressed final /i/ or /ɪ/ variants. See [IPA rules and audit](IPA_RULES.md).
 - **Mobile input:** IPA transcription boxes use an on-page IPA keypad by default on touch devices, with a **Phone keyboard** option. Typed phonological-process names always use the regular text keyboard; desktop users can type normally or use the IPA keys. The transcription keypad stays in a consistent order; graded choice keyboards remain randomized.
+- **Clearer feedback and navigation:** Transcribe & apply reports adult IPA and the applied IPA separately (0, 1, or 2 parts correct). **Next question** scrolls the prompt into view on mobile. Primary and secondary stress marks are not displayed or required; the on-screen IPA keyboard omits them.
 - 10-question quiz rounds.
 - Works entirely in a web browser. **No build, runtime dependencies, login, or hosting backend required.**
 
