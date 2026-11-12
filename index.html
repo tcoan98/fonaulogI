@@ -199,6 +199,20 @@ input[type="text"]::placeholder{color:#b0b0bc}
 .transcribe-field:focus-within label strong{color:var(--accent-ink)}
 .transcribe-field input{max-width:none;font-size:1.15rem;letter-spacing:.02em}
 .transcribe-keyboard-label{margin:17px 0 5px}
+/* The transcription pad uses a consistent layout, unlike the shuffled quiz answer keys. */
+.ipa-input-method{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:12px 0 9px}
+.ipa-input-method strong{font-size:.89rem}
+.ipa-input-method-buttons{display:flex;flex-wrap:wrap;gap:6px}
+.ipa-input-method-buttons button{min-height:42px;padding:8px 11px;font-size:.86rem}
+.ipa-input-method-buttons button.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.transcribe-field input.ipa-current{outline:2px solid var(--accent);outline-offset:2px;border-color:var(--accent)}
+.transcribe-field input[readonly]{cursor:text;opacity:1;-webkit-text-fill-color:var(--ink)}
+.ipa-transcription-keyboard{grid-template-columns:repeat(auto-fit,minmax(44px,1fr));gap:6px}
+.ipa-transcription-keyboard .key{min-height:45px;padding:7px 2px;touch-action:manipulation}
+.ipa-keyboard-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-top:14px}
+.ipa-keyboard-header .transcribe-keyboard-label{margin:0;flex:1 1 175px}
+.ipa-keyboard-tools{display:flex;gap:6px}
+.ipa-keyboard-tools button{min-height:42px;padding:7px 10px}
 .transcribe-actions{align-items:center}
 .transcribe-actions .primary{margin-left:auto}
 .feedback p{margin:5px 0}
@@ -216,6 +230,9 @@ footer{font-size:.86rem;color:var(--muted);margin-top:24px;border-top:1px solid 
   .topline h2{max-width:100%}
   nav.tabs .tab{flex:1 1 145px}
   .feature-options button{flex:1 1 120px}
+  .ipa-transcription-keyboard{grid-template-columns:repeat(auto-fit,minmax(43px,1fr));gap:5px}
+  .ipa-transcription-keyboard .key{font-size:1.16rem;min-height:45px}
+  .ipa-input-method{align-items:flex-start}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button{transition:none}}
 </style>
@@ -276,20 +293,31 @@ footer{font-size:.86rem;color:var(--muted);margin-top:24px;border-top:1px solid 
   </div>
   <div class="prompt" id="proc-prompt">/kæt/ → [tæt]<small>Adult target → child's production</small></div>
   <form id="transcribe-form" class="transcribe-form hidden" autocomplete="off">
-    <p class="muted">Write the adult word in broad American English IPA, then write the whole word again with the given process applied. You can type directly or use the IPA keyboard. Stress marks and / / or [ ] are optional. For appropriate unstressed final vowels (as in baby), both /i/ and /ɪ/ are accepted; this does not apply to other /i/–/ɪ/ contrasts.</p>
+    <p class="muted">Write the adult word in broad American English IPA, then write the whole word again with the given process applied. On phones, tap the IPA keys below; you can switch to your phone's keyboard if you prefer. Stress marks and / / or [ ] are optional. For appropriate unstressed final vowels (as in baby), both /i/ and /ɪ/ are accepted; this does not apply to other /i/–/ɪ/ contrasts.</p>
+    <div id="ipa-input-method" class="ipa-input-method hidden" role="group" aria-label="IPA input method">
+      <strong>IPA input method</strong>
+      <div class="ipa-input-method-buttons">
+        <button type="button" id="ipa-method-custom" class="active" aria-pressed="true">IPA keys</button>
+        <button type="button" id="ipa-method-phone" aria-pressed="false">Phone keyboard</button>
+      </div>
+    </div>
     <div class="transcribe-field">
       <label for="transcribe-adult"><strong>1. Adult word in IPA</strong> <span class="muted">(phonemic transcription)</span></label>
-      <input id="transcribe-adult" type="text" inputmode="text" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Type adult IPA…" aria-label="Adult word IPA" required>
+      <input id="transcribe-adult" type="text" inputmode="text" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Type adult IPA…" aria-label="Adult word IPA" aria-describedby="ipa-key-help" required>
     </div>
     <div class="transcribe-field">
       <label for="transcribe-child"><strong>2. Word with the process applied</strong> <span class="muted">(child production in IPA)</span></label>
-      <input id="transcribe-child" type="text" inputmode="text" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Type transformed IPA…" aria-label="Transformed word IPA" required>
+      <input id="transcribe-child" type="text" inputmode="text" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Type transformed IPA…" aria-label="Transformed word IPA" aria-describedby="ipa-key-help" required>
     </div>
-    <p class="muted transcribe-keyboard-label">IPA keyboard — select a field, then tap symbols to insert them:</p>
-    <div id="transcribe-keys" class="keyboard" aria-label="IPA transcription keyboard"></div>
+    <div class="ipa-keyboard-header" id="ipa-keyboard-header">
+      <p class="muted transcribe-keyboard-label" id="ipa-key-help">IPA keypad · <span id="ipa-active-target">Adult word</span> selected</p>
+      <div class="ipa-keyboard-tools">
+        <button id="transcribe-backspace" type="button" aria-label="Delete previous IPA symbol">⌫ Delete</button>
+        <button id="transcribe-clear" type="button">Clear</button>
+      </div>
+    </div>
+    <div id="transcribe-keys" class="keyboard ipa-transcription-keyboard" aria-label="IPA transcription keyboard"></div>
     <div class="actions transcribe-actions">
-      <button id="transcribe-backspace" type="button">⌫ Backspace</button>
-      <button id="transcribe-clear" type="button">Clear field</button>
       <button id="transcribe-submit" type="submit" class="primary" disabled>Check both answers</button>
     </div>
   </form>
@@ -297,7 +325,7 @@ footer{font-size:.86rem;color:var(--muted);margin-top:24px;border-top:1px solid 
   <div id="process-keyboard" class="grid"></div>
   <form id="typed-process-form" class="typed-process-form hidden" autocomplete="off">
     <label class="hidden" for="typed-process-input">Name of phonological process</label>
-    <input id="typed-process-input" type="text" aria-label="Name of phonological process" placeholder="Enter the process name" spellcheck="false" autocapitalize="off" required>
+    <input id="typed-process-input" type="text" inputmode="text" aria-label="Name of phonological process" placeholder="Enter the process name" spellcheck="false" autocapitalize="off" autocomplete="off" required>
     <button class="primary" id="typed-process-continue" type="submit">Continue to sound change</button>
   </form>
   <div class="step hidden" id="step-two"><span>2</span><strong id="sound-instruction">Select the affected sound change</strong></div>
@@ -3249,6 +3277,12 @@ let procIndex=0,procQuestionIndex=0,procScore=0,procHistory=[],procUsedWords=new
 const ipaKeys=["p","b","t","d","k","ɡ","f","v","θ","ð","s","z","ʃ","ʒ","h","tʃ","dʒ","m","n","ŋ","l","ɹ","w","j","i","ɪ","ɛ","æ","ɑ","ɔ","ʊ","u","ʌ","ə","ɝ","eɪ","aɪ","ɔɪ","aʊ","oʊ"];
 // Additional symbols used in the curated word bank but not the sound-change keyboard.
 const transcriptionKeys=[...new Set([...ipaKeys,"ɚ","ˈ","ˌ"])];
+// A stable layout is easier to use when composing complete transcriptions.
+// This is ONLY for the transcription keypad: graded classification and
+// process-choice keyboards are still randomized on each new question.
+const stableTranscriptionKeys=[...transcriptionKeys];
+const touchIPADevice=window.matchMedia("(pointer: coarse)").matches;
+let ipaInputMethod="ipa"; // touch devices default to the in-page IPA keypad
 let activeTranscriptionField="transcribe-adult";
 function normalizeTranscriptionWithStress(value){
   // Normalize presentation only; retain stress markers for optional-placement checks.
@@ -3293,8 +3327,51 @@ function updateTranscriptionSubmit(){
     !$("transcribe-adult").value.trim() || !$("transcribe-child").value.trim();
 }
 function getActiveTranscriptionInput(){return $(activeTranscriptionField);}
+function showActiveTranscriptionField(){
+  for(const id of ["transcribe-adult","transcribe-child"]){
+    $(id).classList.toggle("ipa-current",id===activeTranscriptionField);
+  }
+  $("ipa-active-target").textContent=activeTranscriptionField==="transcribe-adult"?"Adult word":"Word with process applied";
+}
+function updateIPAInputMethod(){
+  const customOnTouch=touchIPADevice && ipaInputMethod==="ipa";
+  $("ipa-input-method").classList.toggle("hidden",!touchIPADevice);
+  $("ipa-method-custom").classList.toggle("active",customOnTouch);
+  $("ipa-method-phone").classList.toggle("active",touchIPADevice&&!customOnTouch);
+  $("ipa-method-custom").setAttribute("aria-pressed",String(customOnTouch));
+  $("ipa-method-phone").setAttribute("aria-pressed",String(touchIPADevice&&!customOnTouch));
+  // inputmode=none requests that browsers suppress the OS soft keyboard;
+  // readOnly provides a second safeguard on mobile browsers that ignore it.
+  // Neither attribute is applied to the plain-English process-name input.
+  for(const id of ["transcribe-adult","transcribe-child"]){
+    const field=$(id);
+    field.inputMode=customOnTouch?"none":"text";
+    field.readOnly=customOnTouch;
+    field.placeholder=customOnTouch?"Tap IPA keys below…":
+      id==="transcribe-adult"?"Type adult IPA…":"Type transformed IPA…";
+  }
+  $("ipa-keyboard-header").classList.toggle("hidden",touchIPADevice&&!customOnTouch);
+  $("transcribe-keys").classList.toggle("hidden",touchIPADevice&&!customOnTouch);
+  showActiveTranscriptionField();
+}
+function setIPAInputMethod(method){
+  if(!touchIPADevice || procAnswered || !["ipa","phone"].includes(method))return;
+  if(ipaInputMethod===method)return;
+  // Blur BEFORE enabling readonly, so a currently open system keyboard closes.
+  const field=getActiveTranscriptionInput();field.blur();
+  ipaInputMethod=method;updateIPAInputMethod();
+  // On user request, focus the editable field to bring up the native keyboard.
+  if(method==="phone")field.focus();
+}
+$("ipa-method-custom").onclick=()=>setIPAInputMethod("ipa");
+$("ipa-method-phone").onclick=()=>setIPAInputMethod("phone");
 for(const id of ["transcribe-adult","transcribe-child"]){
-  $(id).addEventListener("focus",()=>activeTranscriptionField=id);
+  $(id).addEventListener("focus",()=>{
+    activeTranscriptionField=id;showActiveTranscriptionField();
+  });
+  $(id).addEventListener("click",()=>{
+    activeTranscriptionField=id;showActiveTranscriptionField();
+  });
   $(id).addEventListener("input",updateTranscriptionSubmit);
 }
 function editTranscriptionField(action,value=""){
@@ -3306,12 +3383,11 @@ function editTranscriptionField(action,value=""){
     const from=start===end?Math.max(0,start-1):start;
     field.setRangeText("",from,end,"end");
   }else field.setRangeText(value,start,end,"end");
-  field.focus();updateTranscriptionSubmit();
+  field.focus({preventScroll:true});updateTranscriptionSubmit();
 }
 function renderTranscriptionKeyboard(){
   const keyboard=$("transcribe-keys");keyboard.replaceChildren();
-  // Shuffle once per question; keep symbol locations fixed during transcription.
-  shuffle(transcriptionKeys).forEach(symbol=>{
+  stableTranscriptionKeys.forEach(symbol=>{
     const button=document.createElement("button");button.type="button";button.className="key";
     button.textContent=symbol;button.setAttribute("aria-label",`Insert IPA ${symbol}`);
     button.addEventListener("pointerdown",event=>event.preventDefault());
@@ -3353,6 +3429,7 @@ function checkTranscriptionAnswer(){
   for(const id of ["transcribe-adult","transcribe-child"])$(id).disabled=true;
   for(const button of $("transcribe-keys").querySelectorAll("button"))button.disabled=true;
   $("transcribe-backspace").disabled=true;$("transcribe-clear").disabled=true;
+  $("ipa-method-custom").disabled=true;$("ipa-method-phone").disabled=true;
 }
 $("transcribe-form").onsubmit=event=>{event.preventDefault();checkTranscriptionAnswer();};
 $("transcribe-backspace").onclick=()=>editTranscriptionField("backspace");
@@ -3606,7 +3683,8 @@ function renderProcess(){
    for(const id of ["transcribe-adult","transcribe-child"]){$(id).value="";$(id).disabled=false;}
    activeTranscriptionField="transcribe-adult";
    $("transcribe-backspace").disabled=false;$("transcribe-clear").disabled=false;
-   renderTranscriptionKeyboard();updateTranscriptionSubmit();return;
+   $("ipa-method-custom").disabled=false;$("ipa-method-phone").disabled=false;
+   renderTranscriptionKeyboard();updateIPAInputMethod();updateTranscriptionSubmit();return;
  }
  // Recognition retains the full list; production only shows processes with a
  // valid, constructible sound change for the currently displayed adult word.
