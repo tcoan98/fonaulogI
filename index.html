@@ -3250,13 +3250,16 @@ const ipaKeys=["p","b","t","d","k","ɡ","f","v","θ","ð","s","z","ʃ","ʒ","h",
 // Additional symbols used in the curated word bank but not the sound-change keyboard.
 const transcriptionKeys=[...new Set([...ipaKeys,"ɚ","ˈ","ˌ"])];
 let activeTranscriptionField="transcribe-adult";
-function normalizeTranscription(value){
-  // Ignore only notational differences, not distinct vowels or consonants.
+function normalizeTranscriptionWithStress(value){
+  // Normalize presentation only; retain stress markers for optional-placement checks.
   let result=String(value).normalize("NFC").trim();
   result=result.replace(/^[\/\[⟨]\s*/u,"").replace(/\s*[\/\]⟩]$/u,"");
-  return result.replace(/\s+/gu,"").replace(/[ˈˌ]/gu,"")
+  return result.replace(/\s+/gu,"")
     .replace(/([td])͡([ʃʒ])/gu,"$1$2")
     .replace(/g/gu,"ɡ").replace(/r/gu,"ɹ");
+}
+function normalizeTranscription(value){
+  return normalizeTranscriptionWithStress(value).replace(/[ˈˌ]/gu,"");
 }
 // In selected polysyllabic words, the weak word-final "happy vowel" may be
 // transcribed /i/ or /ɪ/ in different classroom conventions. This is NOT a
@@ -3269,9 +3272,17 @@ const happyVowelWords=new Set([
 ]);
 function acceptedTranscription(response,expected,word){
  const actual=normalizeTranscription(response),reference=normalizeTranscription(expected);
- if(actual===reference)return true;
- return happyVowelWords.has(word) && reference.endsWith('i') &&
+ const ordinary=actual===reference;
+ const happyVariant=happyVowelWords.has(word) && reference.endsWith('i') &&
    actual===reference.slice(0,-1)+'ɪ';
+ if(!ordinary&&!happyVariant)return false;
+ // Stress marks are optional, but if BOTH the learner and the reference mark
+ // stress, an explicitly misplaced marker is not silently discarded.
+ const markedAnswer=normalizeTranscriptionWithStress(response);
+ const markedReference=normalizeTranscriptionWithStress(expected);
+ if(!/[ˈˌ]/u.test(markedAnswer)||!/[ˈˌ]/u.test(markedReference))return true;
+ return markedAnswer===markedReference ||
+   (happyVariant&&markedAnswer===markedReference.slice(0,-1)+'ɪ');
 }
 function acceptedHappyVowelVariant(response,expected,word){
  return acceptedTranscription(response,expected,word)&&
@@ -3511,13 +3522,15 @@ $("inv-reset").onclick=()=>{$("inv-submit").classList.remove("hidden");startInve
 function currentQ(){return processQs[procQuestionIndex]}
 // Sample adult words uniformly, never repeating a word already displayed this round.
 // Refreshes also count as displayed words even when the question was skipped.
-const processWordBank=[...new Set(processQs.map(q=>q.word))];
+// Exclude malformed future additions before question selection, too (not only
+// from the list of applicable processes). Currently all 300 examples qualify.
+const processWordBank=[...new Set(processQs.filter(validProcessApplication).map(q=>q.word))];
 function unusedProcessWords(){return processWordBank.filter(word=>!procUsedWords.has(word));}
 function selectUnseenProcessWord(){
  const available=unusedProcessWords();
  if(!available.length)return false;
  const word=available[Math.floor(Math.random()*available.length)];
- const possible=processQs.map((q,i)=>({q,i})).filter(({q})=>q.word===word);
+ const possible=processQs.map((q,i)=>({q,i})).filter(({q})=>q.word===word&&validProcessApplication(q));
  procQuestionIndex=possible[Math.floor(Math.random()*possible.length)].i;
  procUsedWords.add(word);
  return true;
