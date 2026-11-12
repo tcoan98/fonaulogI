@@ -163,6 +163,8 @@ nav.tabs .tab{flex:1 1 210px;min-height:48px}
 }
 .feedback.good{background:var(--green-bg);color:var(--good);border-color:#386a50}
 .feedback.bad{background:var(--red-bg);color:#ffb8bc;border-color:#87434b}
+.feedback.mixed{background:#352a1b;color:#ffddb1;border-color:#866339}
+#proc-prompt{scroll-margin-top:14px}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:19px}
 .review-panel{margin-top:22px;padding-top:19px;border-top:1px solid var(--line)}
 .review-panel h3{font-size:1.17rem;margin:0 0 6px}
@@ -293,7 +295,7 @@ footer{font-size:.86rem;color:var(--muted);margin-top:24px;border-top:1px solid 
   </div>
   <div class="prompt" id="proc-prompt">/kæt/ → [tæt]<small>Adult target → child's production</small></div>
   <form id="transcribe-form" class="transcribe-form hidden" autocomplete="off">
-    <p class="muted">Write the adult word in broad American English IPA, then write the whole word again with the given process applied. On phones, tap the IPA keys below; you can switch to your phone's keyboard if you prefer. Stress marks and / / or [ ] are optional. For appropriate unstressed final vowels (as in baby), both /i/ and /ɪ/ are accepted; this does not apply to other /i/–/ɪ/ contrasts.</p>
+    <p class="muted">Write the adult word in broad American English IPA, then write the whole word again with the given process applied. On phones, tap the IPA keys below; you can switch to your phone's keyboard if you prefer. Do not add stress marks; / / and [ ] are optional. For appropriate unstressed final vowels (as in baby), both /i/ and /ɪ/ are accepted; this does not apply to other /i/–/ɪ/ contrasts.</p>
     <div id="ipa-input-method" class="ipa-input-method hidden" role="group" aria-label="IPA input method">
       <strong>IPA input method</strong>
       <div class="ipa-input-method-buttons">
@@ -3276,7 +3278,7 @@ let invIndex=0,invAnswered=false,invMode="category",invRound=[],invScore=0,invSe
 let procIndex=0,procQuestionIndex=0,procScore=0,procHistory=[],procUsedWords=new Set(),chosenProcess="",chosenOriginal=null,chosenReplacement=null,chosenInsertionAt=null,procAnswered=false,procAnswerStyle="choices";
 const ipaKeys=["p","b","t","d","k","ɡ","f","v","θ","ð","s","z","ʃ","ʒ","h","tʃ","dʒ","m","n","ŋ","l","ɹ","w","j","i","ɪ","ɛ","æ","ɑ","ɔ","ʊ","u","ʌ","ə","ɝ","eɪ","aɪ","ɔɪ","aʊ","oʊ"];
 // Additional symbols used in the curated word bank but not the sound-change keyboard.
-const transcriptionKeys=[...new Set([...ipaKeys,"ɚ","ˈ","ˌ"])];
+const transcriptionKeys=[...new Set([...ipaKeys,"ɚ"])];
 // A stable layout is easier to use when composing complete transcriptions.
 // This is ONLY for the transcription keypad: graded classification and
 // process-choice keyboards are still randomized on each new question.
@@ -3284,16 +3286,16 @@ const stableTranscriptionKeys=[...transcriptionKeys];
 const touchIPADevice=window.matchMedia("(pointer: coarse)").matches;
 let ipaInputMethod="ipa"; // touch devices default to the in-page IPA keypad
 let activeTranscriptionField="transcribe-adult";
-function normalizeTranscriptionWithStress(value){
-  // Normalize presentation only; retain stress markers for optional-placement checks.
+// This classroom uses broad IPA without primary or secondary stress marks.
+// Keep any marks in the internal examples for phonological validation, but
+// hide them in the interface and ignore them during transcription grading.
+function showIPA(value){return String(value).replace(/[ˈˌ]/gu,"");}
+function normalizeTranscription(value){
   let result=String(value).normalize("NFC").trim();
   result=result.replace(/^[\/\[⟨]\s*/u,"").replace(/\s*[\/\]⟩]$/u,"");
-  return result.replace(/\s+/gu,"")
+  return showIPA(result.replace(/\s+/gu,"")
     .replace(/([td])͡([ʃʒ])/gu,"$1$2")
-    .replace(/g/gu,"ɡ").replace(/r/gu,"ɹ");
-}
-function normalizeTranscription(value){
-  return normalizeTranscriptionWithStress(value).replace(/[ˈˌ]/gu,"");
+    .replace(/g/gu,"ɡ").replace(/r/gu,"ɹ"));
 }
 // In selected polysyllabic words, the weak word-final "happy vowel" may be
 // transcribed /i/ or /ɪ/ in different classroom conventions. This is NOT a
@@ -3306,17 +3308,9 @@ const happyVowelWords=new Set([
 ]);
 function acceptedTranscription(response,expected,word){
  const actual=normalizeTranscription(response),reference=normalizeTranscription(expected);
- const ordinary=actual===reference;
- const happyVariant=happyVowelWords.has(word) && reference.endsWith('i') &&
-   actual===reference.slice(0,-1)+'ɪ';
- if(!ordinary&&!happyVariant)return false;
- // Stress marks are optional, but if BOTH the learner and the reference mark
- // stress, an explicitly misplaced marker is not silently discarded.
- const markedAnswer=normalizeTranscriptionWithStress(response);
- const markedReference=normalizeTranscriptionWithStress(expected);
- if(!/[ˈˌ]/u.test(markedAnswer)||!/[ˈˌ]/u.test(markedReference))return true;
- return markedAnswer===markedReference ||
-   (happyVariant&&markedAnswer===markedReference.slice(0,-1)+'ɪ');
+ // Unstressed final happy vowels in the reviewed words accept either /i/ or /ɪ/.
+ return actual===reference || (happyVowelWords.has(word) && reference.endsWith('i') &&
+   actual===reference.slice(0,-1)+'ɪ');
 }
 function acceptedHappyVowelVariant(response,expected,word){
  return acceptedTranscription(response,expected,word)&&
@@ -3404,27 +3398,35 @@ function checkTranscriptionAnswer(){
   const adultVariant=acceptedHappyVowelVariant(adult,q.target,q.word);
   const childVariant=acceptedHappyVowelVariant(child,q.child,q.word);
   const correct=adultCorrect&&childCorrect;
+  const correctParts=Number(adultCorrect)+Number(childCorrect);
   procAnswered=true;if(correct)procScore++;
-  const feedback=$("proc-feedback");feedback.className="feedback "+(correct?"good":"bad");
+  const feedback=$("proc-feedback");
+  feedback.className="feedback "+(correct?"good":correctParts===1?"mixed":"bad");
   feedback.replaceChildren();
-  for(const line of [
-    correct?"Correct! Both transcriptions match the reference.":"Not quite. Here's how each part was evaluated:",
-    adultCorrect?(adultVariant?
-      `✓ Adult word: /${adult}/ is accepted as an unstressed final-vowel variant of /${q.target}/.`:
-      `✓ Adult word: /${adult}/ matches the reference /${q.target}/.`):
-      `✕ Adult word: you entered /${adult}/, but the reference is /${q.target}/.`,
-    childCorrect?(childVariant?
-      `✓ Applied process: [${child}] is an accepted final-vowel variant of [${q.child}].`:
-      `✓ Applied process: [${child}] matches [${q.child}].`):
-      `✕ Applied process: you entered [${child}], but ${q.answer} gives [${q.child}] in this example.`,
+  const feedbackLines=[
+    correctParts===2?"2 of 2 parts correct — excellent work!":
+      `${correctParts} of 2 parts correct. Each transcription is graded independently; both are needed for full question credit.`,
+    adultCorrect?
+      (adultVariant?
+        `✓ Step 1 — Adult IPA: Correct. /${showIPA(adult)}/ is an accepted final-vowel variant of /${showIPA(q.target)}/.`:
+        `✓ Step 1 — Adult IPA: Correct. /${showIPA(adult)}/ matches /${showIPA(q.target)}/.`):
+      `✕ Step 1 — Adult IPA: Needs correction. You entered /${showIPA(adult)}/; the reference is /${showIPA(q.target)}/.`,
+    childCorrect?
+      (childVariant?
+        `✓ Step 2 — Applied process: Correct independently of Step 1. [${showIPA(child)}] is an accepted final-vowel variant of [${showIPA(q.child)}].`:
+        `✓ Step 2 — Applied process: Correct independently of Step 1. [${showIPA(child)}] matches the expected result [${showIPA(q.child)}].`):
+      `✕ Step 2 — Applied process: Needs correction. You entered [${showIPA(child)}]; applying ${q.answer} gives [${showIPA(q.child)}].`,
     ...( /^ŋ/gu.test(normalizeTranscription(child)) ?
       ['Note: English normally does not allow a word-initial velar nasal [ŋ]. Use a different place substitution unless a specific production is documented.'] : []),
-    q.explain
-  ]){const paragraph=document.createElement("p");paragraph.textContent=line;feedback.appendChild(paragraph);}
+    `Why this process applies: ${showIPA(q.explain)}`
+  ];
+  for(const line of feedbackLines){
+    const paragraph=document.createElement("p");paragraph.textContent=line;feedback.appendChild(paragraph);
+  }
   procHistory.push({question:`${q.word} — apply ${q.answer} (IPA transcription)`,
-    response:`Adult: /${adult}/; with process: [${child}]`,
-    answer:`Adult: /${q.target}/; with process: [${q.child}]`,correct,
-    note:`Adult transcription: ${adultCorrect?"correct":"incorrect"}${adultVariant?' (accepted final-vowel variant)':''}; process application: ${childCorrect?"correct":"incorrect"}${childVariant?' (accepted final-vowel variant)':''}. ${q.explain}`});
+    response:`Adult: /${showIPA(adult)}/; with process: [${showIPA(child)}]`,
+    answer:`Adult: /${showIPA(q.target)}/; with process: [${showIPA(q.child)}]`,correct,
+    note:`${correctParts}/2 parts correct. Step 1 adult IPA: ${adultCorrect?"correct":"needs correction"}${adultVariant?' (accepted final-vowel variant)':''}; Step 2 applied IPA: ${childCorrect?"correct":"needs correction"}${childVariant?' (accepted final-vowel variant)':''}. ${showIPA(q.explain)}`});
   $("proc-next").disabled=false;$("proc-refresh").disabled=true;$("transcribe-submit").disabled=true;
   for(const id of ["transcribe-adult","transcribe-child"])$(id).disabled=true;
   for(const button of $("transcribe-keys").querySelectorAll("button"))button.disabled=true;
@@ -3440,9 +3442,9 @@ document.querySelectorAll(".tab[data-tab]").forEach(b=>b.onclick=()=>showTab(b.d
 // Stored answers are snapshots taken on submission, never recomputed from the current UI.
 function formatPhonemes(symbols){return symbols.length?symbols.map(symbol=>`/${symbol}/`).join(", "):"None selected";}
 function formatSoundChange(from,to,target,insertAt){
- const original=from===null?"Not selected":from===""?"None (insertion)":`/${from}/`;
- const replacement=to===null?"Not selected":to===""?"None (deletion)":`[${to}]`;
- const at=from===""&&Number.isInteger(insertAt)?` at /${target.slice(0,insertAt)}|${target.slice(insertAt)}/`:"";
+ const original=from===null?"Not selected":from===""?"None (insertion)":`/${showIPA(from)}/`;
+ const replacement=to===null?"Not selected":to===""?"None (deletion)":`[${showIPA(to)}]`;
+ const at=from===""&&Number.isInteger(insertAt)?` at /${showIPA(target.slice(0,insertAt))}|${showIPA(target.slice(insertAt))}/`:"";
  return `${original} → ${replacement}${at}`;
 }
 function hideReview(which){
@@ -3663,9 +3665,9 @@ $("typed-process-form").onsubmit=event=>{
 function renderProcess(){
  const q=currentQ(),mode=$("proc-mode").value;procAnswered=false;chosenProcess="";chosenOriginal=null;chosenReplacement=null;chosenInsertionAt=null;
  $("proc-count").textContent=`Question ${procIndex+1} of ${ROUND_LENGTH}`;
- $("proc-prompt").innerHTML=mode==="recognize"?`/${q.target}/ → [${q.child}]<small>${q.word} · Adult target → child's production</small>`:
+ $("proc-prompt").innerHTML=mode==="recognize"?`/${showIPA(q.target)}/ → [${showIPA(q.child)}]<small>${q.word} · Adult target → child's production</small>`:
    mode==="transcribe"?`${q.word}<small>Apply: ${q.answer} · Transcribe the adult word and the transformed production</small>`:
-   `/${q.target}/<small>${q.word} · Adult target — apply the process you select</small>`;
+   `/${showIPA(q.target)}/<small>${q.word} · Adult target — apply the process you select</small>`;
  $("proc-feedback").className="feedback hidden";$("proc-next").disabled=true;
  $("proc-next").textContent=procIndex===ROUND_LENGTH-1?"See results":"Next question";
  $("proc-refresh").disabled=!canRefreshProcessWord();$("proc-refresh").classList.remove("hidden");$("sound-back").disabled=false;
@@ -3709,14 +3711,14 @@ function selectProcess(p){
  $("production-wrap").classList.toggle("hidden",mode==="recognize");
  $("built-production").textContent="[ ]";
  $("original-keys").innerHTML="";
- const symbols=[...new Set(q.target.match(/tʃ|dʒ|eɪ|aɪ|ɔɪ|aʊ|oʊ|./gu)||[])];
+ const symbols=[...new Set((q.target.match(/tʃ|dʒ|eɪ|aɪ|ɔɪ|aʊ|oʊ|./gu)||[]).filter(s=>s!=="ˈ"&&s!=="ˌ"))];
  // Reduplication or syllable deletion may affect multiple phonemes at once.
  const expectedFrom=mode==="produce"?applicationForProcess(q.target,p)?.from:q.from;
  if(expectedFrom && !symbols.includes(expectedFrom))symbols.unshift(expectedFrom);
  const originalChoices=shuffle(["",...symbols]); // None is the original sound for epenthesis.
  originalChoices.forEach(s=>{
    const b=document.createElement("button");b.className="key";
-   b.textContent=s===""?"∅ None":s;
+   b.textContent=s===""?"∅ None":showIPA(s);
    b.title=s===""?"No original sound (insertion)":`Original sound /${s}/`;
    b.onclick=()=>{
      chosenOriginal=s;chosenReplacement=null;chosenInsertionAt=null;
@@ -3735,7 +3737,7 @@ function selectProcess(p){
 function renderInsertionPositions(){
  $("insertion-keys").innerHTML="";
  if(chosenOriginal!=="")return;
- const tokens=currentQ().target.match(/tʃ|dʒ|eɪ|aɪ|ɔɪ|aʊ|oʊ|./gu)||[];
+ const tokens=(currentQ().target.match(/tʃ|dʒ|eɪ|aɪ|ɔɪ|aʊ|oʊ|./gu)||[]).filter(s=>s!=="ˈ"&&s!=="ˌ");
  let at=0;
  for(let i=0;i<=tokens.length;i++){
    const label=i===0?`Before /${tokens[0]}/`:
@@ -3759,7 +3761,7 @@ function updateProcessSubmit(){
 function updateBuiltProduction(){
  if($("proc-mode").value!=="produce")return;
  const result=buildAppliedProduction(currentQ().target,chosenOriginal,chosenReplacement,chosenInsertionAt);
- $("built-production").textContent=result===null?"[ ]":"["+result+"]";
+ $("built-production").textContent=result===null?"[ ]":"["+showIPA(result)+"]";
 }
 function renderReplacementKeys(){
  $("replacement-keys").innerHTML="";
@@ -3770,7 +3772,7 @@ function renderReplacementKeys(){
  const special=exemplar && exemplar.to && !ipaKeys.includes(exemplar.to)?[exemplar.to]:[];
  shuffle(["",...ipaKeys,...special]).forEach(s=>{
    const b=document.createElement("button");b.className="key";
-   b.textContent=s===""?"∅ None":s;
+   b.textContent=s===""?"∅ None":showIPA(s);
    b.title=s===""?"No replacement (delete original sound)":`Replace with [${s}]`;
    b.onclick=()=>{
      chosenReplacement=s;$("replacement-sound").textContent=s===""?"∅ None":"["+s+"]";
@@ -3803,7 +3805,7 @@ $("proc-submit").onclick=()=>{
  const providedProcess=`You ${responseVerb} “${chosenProcess}”`;
  const selectedChange=formatSoundChange(chosenOriginal,chosenReplacement,q.target,chosenInsertionAt);
  const correctChange=expected?formatSoundChange(expected.from,expected.to,q.target,expected.insertAt??null):"Not available";
- const selectedProduction=constructed===null?"Not constructed":`[${constructed}]`;
+ const selectedProduction=constructed===null?"Not constructed":`[${showIPA(constructed)}]`;
  let immediateFeedback="";
  if(mode==="recognize"){
    if(!processCorrect){
@@ -3816,19 +3818,19 @@ $("proc-submit").onclick=()=>{
  }else if(expected){
    immediateFeedback=ok?
      `Correct! You applied ${expected.answer} using ${selectedChange} to produce ${selectedProduction}.`:
-     `Not quite. You selected ${chosenProcess} and used ${selectedChange} to produce ${selectedProduction}, but the expected change was ${correctChange} to produce [${expected.child}].`;
+     `Not quite. You selected ${chosenProcess} and used ${selectedChange} to produce ${selectedProduction}, but the expected change was ${correctChange} to produce [${showIPA(expected.child)}].`;
  }else{
    immediateFeedback=`Not quite. You selected ${chosenProcess}, which is not available for this word.`;
  }
  $("proc-feedback").className="feedback "+(ok?"good":"bad");
- $("proc-feedback").textContent=immediateFeedback+(expected?` ${expected.explain} Expected production: [${expected.child}].`:"");
+ $("proc-feedback").textContent=immediateFeedback+(expected?` ${showIPA(expected.explain)} Expected production: [${showIPA(expected.child)}].`:"");
  if(ok)procScore++;
  const actualAnswer=`${chosenProcess || "No process selected"}; ${formatSoundChange(chosenOriginal,chosenReplacement,q.target,chosenInsertionAt)}; production: ${selectedProduction}`;
  const reference=expected||q;
- const rightAnswer=`${reference.answer}; ${formatSoundChange(reference.from,reference.to,q.target,reference.insertAt??null)}; production: [${reference.child}]`;
- procHistory.push({question:mode==="recognize"?`${q.word}: /${q.target}/ → [${q.child}]`:
-   `${q.word}: /${q.target}/ — apply a process`,response:actualAnswer,
-   answer:rightAnswer,correct:ok,note:reference.explain||""});
+ const rightAnswer=`${reference.answer}; ${formatSoundChange(reference.from,reference.to,q.target,reference.insertAt??null)}; production: [${showIPA(reference.child)}]`;
+ procHistory.push({question:mode==="recognize"?`${q.word}: /${showIPA(q.target)}/ → [${showIPA(q.child)}]`:
+   `${q.word}: /${showIPA(q.target)}/ — apply a process`,response:actualAnswer,
+   answer:rightAnswer,correct:ok,note:showIPA(reference.explain||"")});
  $("proc-next").disabled=false;$("proc-submit").disabled=true;$("proc-refresh").disabled=true;
  // Lock the submitted choices to preserve consistency with the recorded review answer.
  for(const id of ["original-keys","replacement-keys","insertion-keys"]){
@@ -3853,11 +3855,16 @@ function startProcessRound(){
  hideReview("proc");
  if(selectUnseenProcessWord())renderProcess();
 }
+// Keep the current word/process visible when the learner advances from the
+// feedback and keypad at the bottom of a long mobile question.
+function scrollToProcessPrompt(){
+  requestAnimationFrame(()=>$("proc-prompt").scrollIntoView({behavior:"instant",block:"start"}));
+}
 $("proc-refresh").onclick=()=>{if(!procAnswered&&canRefreshProcessWord())moveToDifferentProcessWord()};
 $("proc-next").onclick=()=>{
  if(!procAnswered)return;
- if(procIndex===ROUND_LENGTH-1){finishProcessRound();return;}
- procIndex++;moveToDifferentProcessWord();
+ if(procIndex===ROUND_LENGTH-1){finishProcessRound();scrollToProcessPrompt();return;}
+ procIndex++;moveToDifferentProcessWord();scrollToProcessPrompt();
 };
 $("proc-reset").onclick=startProcessRound;
 $("proc-mode").onchange=startProcessRound;
