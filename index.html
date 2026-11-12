@@ -276,7 +276,7 @@ footer{font-size:.86rem;color:var(--muted);margin-top:24px;border-top:1px solid 
   </div>
   <div class="prompt" id="proc-prompt">/kæt/ → [tæt]<small>Adult target → child's production</small></div>
   <form id="transcribe-form" class="transcribe-form hidden" autocomplete="off">
-    <p class="muted">Write the adult word in broad American English IPA, then write the whole word again with the given process applied. You can type directly or use the IPA keyboard. Stress marks and / / or [ ] are optional.</p>
+    <p class="muted">Write the adult word in broad American English IPA, then write the whole word again with the given process applied. You can type directly or use the IPA keyboard. Stress marks and / / or [ ] are optional. For appropriate unstressed final vowels (as in baby), both /i/ and /ɪ/ are accepted; this does not apply to other /i/–/ɪ/ contrasts.</p>
     <div class="transcribe-field">
       <label for="transcribe-adult"><strong>1. Adult word in IPA</strong> <span class="muted">(phonemic transcription)</span></label>
       <input id="transcribe-adult" type="text" inputmode="text" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Type adult IPA…" aria-label="Adult word IPA" required>
@@ -392,7 +392,8 @@ const symbolPromptPool=buildSymbolPromptPool();
 // recognition examples for each of the 16 requested process types.  These are illustrative productions, not
 // developmental norms or predictions for individual children.
 const processes=["Stopping","Deaffrication","Fronting","Depalatalization","Backing","Gliding","Vocalization","Cluster Reduction","Reduplication","Weak Syllable Deletion","Final Consonant Deletion","Labial Assimilation","Alveolar Assimilation","Velar Assimilation","Prevocalic Voicing","Devoicing"];
-const processQs=[
+const processQs=
+[
   {
     "word": "sun",
     "target": "sʌn",
@@ -610,13 +611,13 @@ const processQs=[
     "explain": "An alveolar consonant is produced at a velar place. /d/ → [ɡ]."
   },
   {
-    "word": "nail",
-    "target": "neɪl",
-    "child": "ŋeɪl",
+    "word": "dot",
+    "target": "dɑt",
+    "child": "ɡɑt",
     "answer": "Backing",
-    "from": "n",
-    "to": "ŋ",
-    "explain": "An alveolar consonant is produced at a velar place. /n/ → [ŋ]."
+    "from": "d",
+    "to": "ɡ",
+    "explain": "The initial alveolar /d/ is backed to the velar [ɡ], without a word-initial velar nasal."
   },
   {
     "word": "red",
@@ -1015,13 +1016,13 @@ const processQs=[
     "explain": "A consonant becomes velar like another consonant in the word. /d/ → [ɡ]."
   },
   {
-    "word": "neck",
-    "target": "nɛk",
-    "child": "ŋɛk",
+    "word": "duck",
+    "target": "dʌk",
+    "child": "ɡʌk",
     "answer": "Velar Assimilation",
-    "from": "n",
-    "to": "ŋ",
-    "explain": "A consonant becomes velar like another consonant in the word. /n/ → [ŋ]."
+    "from": "d",
+    "to": "ɡ",
+    "explain": "Velar /k/ in the word conditions the initial /d/ to become velar [ɡ]."
   },
   {
     "word": "pie",
@@ -1708,31 +1709,31 @@ const processQs=[
     "explain": "The alveolar consonant /d/ changes to velar [ɡ]."
   },
   {
-    "word": "nine",
-    "target": "naɪn",
-    "child": "ŋaɪn",
+    "word": "dust",
+    "target": "dʌst",
+    "child": "ɡʌst",
     "answer": "Backing",
-    "from": "n",
-    "to": "ŋ",
-    "explain": "The alveolar consonant /n/ changes to velar [ŋ]."
+    "from": "d",
+    "to": "ɡ",
+    "explain": "The initial alveolar /d/ is backed to the velar [ɡ]."
   },
   {
-    "word": "new",
-    "target": "nu",
-    "child": "ŋu",
+    "word": "dish",
+    "target": "dɪʃ",
+    "child": "ɡɪʃ",
     "answer": "Backing",
-    "from": "n",
-    "to": "ŋ",
-    "explain": "The alveolar consonant /n/ changes to velar [ŋ]."
+    "from": "d",
+    "to": "ɡ",
+    "explain": "The initial alveolar /d/ is backed to the velar [ɡ]."
   },
   {
-    "word": "night",
-    "target": "naɪt",
-    "child": "ŋaɪt",
+    "word": "dive",
+    "target": "daɪv",
+    "child": "ɡaɪv",
     "answer": "Backing",
-    "from": "n",
-    "to": "ŋ",
-    "explain": "The alveolar consonant /n/ changes to velar [ŋ]."
+    "from": "d",
+    "to": "ɡ",
+    "explain": "The initial alveolar /d/ is backed to the velar [ɡ]."
   },
   {
     "word": "rock",
@@ -2806,31 +2807,31 @@ const processQs=[
     "explain": "A consonant /d/ assimilates in place to a later velar sound, becoming [ɡ]."
   },
   {
-    "word": "nuke",
-    "target": "nuk",
-    "child": "ŋuk",
+    "word": "tiger",
+    "target": "taɪɡɚ",
+    "child": "kaɪɡɚ",
     "answer": "Velar Assimilation",
-    "from": "n",
-    "to": "ŋ",
-    "explain": "A consonant /n/ assimilates in place to a later velar sound, becoming [ŋ]."
+    "from": "t",
+    "to": "k",
+    "explain": "The later velar /ɡ/ conditions the initial /t/ to become velar [k]."
   },
   {
-    "word": "knock",
-    "target": "nɑk",
-    "child": "ŋɑk",
+    "word": "ticket",
+    "target": "tɪkɪt",
+    "child": "kɪkɪt",
     "answer": "Velar Assimilation",
-    "from": "n",
-    "to": "ŋ",
-    "explain": "A consonant /n/ assimilates in place to a later velar sound, becoming [ŋ]."
+    "from": "t",
+    "to": "k",
+    "explain": "The later velar /k/ conditions the initial /t/ to become velar [k]."
   },
   {
-    "word": "nag",
-    "target": "næɡ",
-    "child": "ŋæɡ",
+    "word": "digger",
+    "target": "dɪɡɚ",
+    "child": "ɡɪɡɚ",
     "answer": "Velar Assimilation",
-    "from": "n",
-    "to": "ŋ",
-    "explain": "A consonant /n/ assimilates in place to a later velar sound, becoming [ŋ]."
+    "from": "d",
+    "to": "ɡ",
+    "explain": "The later velar /ɡ/ conditions the initial /d/ to become velar [ɡ]."
   },
   {
     "word": "tongue",
@@ -3124,9 +3125,11 @@ function generateWordApplications(q){
  const depal={ʃ:'s',ʒ:'z'};
  const postalveolar=tokens.find(x=>Object.prototype.hasOwnProperty.call(depal,x));
  if(postalveolar)add('Depalatalization',postalveolar,depal[postalveolar],`Postalveolar /${postalveolar}/ becomes alveolar [${depal[postalveolar]}].`);
- const back={t:'k',d:'ɡ',n:'ŋ'};
- // Do not automatically call a change backing when an existing velar could
- // instead make it assimilation; those cases have explicit curated examples.
+ // Prefer well-formed /t/ → [k] and /d/ → [ɡ] for this introductory
+ // exercise. English /ŋ/ is normally excluded from word-initial position;
+ // never auto-generate initial [ŋ] from /n/.
+ const back={t:'k',d:'ɡ'};
+ // Avoid confusing backing with context-conditioned velar assimilation.
  const alveolar= !tokens.some(x=>x==='k'||x==='ɡ'||x==='ŋ') && tokens.find(x=>Object.prototype.hasOwnProperty.call(back,x));
  if(alveolar)add('Backing',alveolar,back[alveolar],`Alveolar /${alveolar}/ becomes velar [${back[alveolar]}].`);
  const liquid=tokens.find((x,i)=>(x==='l'||x==='ɹ')&&tokens[i+1]&&!consonantSet.has(tokens[i+1]));
@@ -3147,8 +3150,80 @@ function generateWordApplications(q){
    add('Devoicing',last,devoice[last],`Final voiced /${last}/ is devoiced.`);
  return extras;
 }
-const generatedProcessApplications=processQs.flatMap(generateWordApplications);
-const processApplications=[...processQs,...generatedProcessApplications];
+// Guard both hand-curated and automatically generated applications. A single
+// segment replacement must match the described process in the correct position;
+// the first identical phoneme in a word is not necessarily the final one.
+const labialConsonants=new Set(['p','b','m']);
+const alveolarConsonants=new Set(['t','d','n','s','z','l']);
+const velarConsonants=new Set(['k','ɡ','ŋ']);
+function validProcessApplication(a){
+ if(!a || !processes.includes(a.answer) || !a.target || !a.child || a.child===a.target)return false;
+ if(/^ŋ/u.test(a.target.replace(/^[ˈˌ]+/u,'')) || /^ŋ/u.test(a.child.replace(/^[ˈˌ]+/u,'')))return false;
+ if(buildAppliedProduction(a.target,a.from,a.to,a.insertAt??null)!==a.child)return false;
+ const tokens=tokenizeTarget(a.target).filter(t=>t!=='ˈ'&&t!=='ˌ');
+ const first=tokens[0],last=tokens[tokens.length-1],second=tokens[1];
+ const equals=(pair)=>pair[a.from]===a.to;
+ const stop={s:'t',z:'d',f:'p',v:'b',θ:'t',ð:'d',ʃ:'t',ʒ:'d'};
+ const front={k:'t',ɡ:'d',ŋ:'n'};
+ const back={t:'k',d:'ɡ'};
+ const voice={p:'b',t:'d',k:'ɡ',f:'v',s:'z',θ:'ð',ʃ:'ʒ'};
+ const devoice={b:'p',d:'t',ɡ:'k',v:'f',z:'s',ʒ:'ʃ'};
+ const assimilationPlace={
+   'Labial Assimilation':labialConsonants,
+   'Alveolar Assimilation':alveolarConsonants,
+   'Velar Assimilation':velarConsonants
+ };
+ if(assimilationPlace[a.answer]){
+   const place=assimilationPlace[a.answer];
+   return consonantSet.has(a.from)&&place.has(a.to)&&
+     tokens.some(t=>place.has(t)&&t!==a.from);
+ }
+ switch(a.answer){
+  case 'Stopping':return equals(stop);
+  case 'Deaffrication':return equals({'tʃ':'ʃ','dʒ':'ʒ'});
+  case 'Fronting':{
+    if(!equals(front))return false;
+    // Avoid unrealistic [nk]/[nɡ] coda outcomes from changing /ŋ/ directly
+    // before another velar sound in a single syllable.
+    if(a.from==='ŋ' && /ŋ[kɡ]/u.test(a.target))return false;
+    return true;
+  }
+  case 'Depalatalization':return equals({'ʃ':'s','ʒ':'z'});
+  case 'Backing':return equals(back)&&!tokens.some(t=>velarConsonants.has(t));
+  case 'Gliding':{
+    const i=tokens.indexOf(a.from);
+    return (a.from==='ɹ'||a.from==='l')&&(a.to==='w'||a.to==='j')&&
+      i>=0&&tokens[i+1]&&!consonantSet.has(tokens[i+1]);
+  }
+  case 'Vocalization':{
+    const i=tokens.indexOf(a.from);
+    return (a.from==='l'||a.from==='ɹ')&&['ʊ','ə','i','oʊ'].includes(a.to)&&
+      i>=0&&(i===tokens.length-1||consonantSet.has(tokens[i+1]));
+  }
+  case 'Cluster Reduction':return a.to===''&&consonantSet.has(first)&&consonantSet.has(second)&&
+    (a.from===first||a.from===second);
+  case 'Reduplication':{
+    const out=a.child.replace(/[ˈˌ]/gu,'');const segments=Array.from(out);
+    if(segments.length%2!==0 || segments.length<4)return false;
+    const half=segments.length/2;
+    return segments.slice(0,half).join('')===segments.slice(half).join('');
+  }
+  case 'Weak Syllable Deletion':return a.to===''&&a.target.startsWith(a.from)&&
+    !a.from.includes('ˈ')&&a.child===a.target.slice(a.from.length)&&
+    (!a.target.includes('ˈ')||a.child.includes('ˈ'));
+  case 'Final Consonant Deletion':return a.to===''&&consonantSet.has(a.from)&&
+    last===a.from&&a.child===a.target.slice(0,-a.from.length);
+  case 'Prevocalic Voicing':return equals(voice)&&first===a.from&&second&&!consonantSet.has(second);
+  case 'Devoicing':return equals(devoice)&&last===a.from&&
+    a.child===a.target.slice(0,-a.from.length)+a.to;
+  default:return false;
+ }
+}
+// A malformed curated example is a content bug, not a practice question.
+const invalidCuratedExamples=processQs.filter(q=>!validProcessApplication(q));
+if(invalidCuratedExamples.length)console.warn('Curated phonology examples need review:',invalidCuratedExamples);
+const generatedProcessApplications=processQs.flatMap(generateWordApplications).filter(validProcessApplication);
+const processApplications=[...processQs.filter(validProcessApplication),...generatedProcessApplications];
 
 // A missing original sound (from: "") indicates insertion. A missing
 // replacement (to: "") indicates deletion. Both must be gradeable.
@@ -3182,6 +3257,25 @@ function normalizeTranscription(value){
   return result.replace(/\s+/gu,"").replace(/[ˈˌ]/gu,"")
     .replace(/([td])͡([ʃʒ])/gu,"$1$2")
     .replace(/g/gu,"ɡ").replace(/r/gu,"ɹ");
+}
+// In selected polysyllabic words, the weak word-final "happy vowel" may be
+// transcribed /i/ or /ɪ/ in different classroom conventions. This is NOT a
+// general /i/–/ɪ/ equivalence (e.g., /bi/ and /bɪ/ are distinct elsewhere).
+// Explicitly scoped to verified words from the curated bank; no generic
+// substitution for stressed vowels, monosyllabic "key", or diphthongs.
+const happyVowelWords=new Set([
+ 'baby','cookie','cherry','jelly','shiny','daisy','bunny','puppy',
+ 'mommy','daddy','kitty','doggy','teddy','happy','coffee','money','pony'
+]);
+function acceptedTranscription(response,expected,word){
+ const actual=normalizeTranscription(response),reference=normalizeTranscription(expected);
+ if(actual===reference)return true;
+ return happyVowelWords.has(word) && reference.endsWith('i') &&
+   actual===reference.slice(0,-1)+'ɪ';
+}
+function acceptedHappyVowelVariant(response,expected,word){
+ return acceptedTranscription(response,expected,word)&&
+   normalizeTranscription(response)!==normalizeTranscription(expected);
 }
 function updateTranscriptionSubmit(){
   $("transcribe-submit").disabled=procAnswered ||
@@ -3218,24 +3312,32 @@ function checkTranscriptionAnswer(){
   if(procAnswered || $("proc-mode").value!=="transcribe")return;
   const q=currentQ(),adult=$("transcribe-adult").value.trim(),child=$("transcribe-child").value.trim();
   if(!adult||!child)return;
-  const adultCorrect=normalizeTranscription(adult)===normalizeTranscription(q.target);
-  const childCorrect=normalizeTranscription(child)===normalizeTranscription(q.child);
+  const adultCorrect=acceptedTranscription(adult,q.target,q.word);
+  const childCorrect=acceptedTranscription(child,q.child,q.word);
+  const adultVariant=acceptedHappyVowelVariant(adult,q.target,q.word);
+  const childVariant=acceptedHappyVowelVariant(child,q.child,q.word);
   const correct=adultCorrect&&childCorrect;
   procAnswered=true;if(correct)procScore++;
   const feedback=$("proc-feedback");feedback.className="feedback "+(correct?"good":"bad");
   feedback.replaceChildren();
   for(const line of [
     correct?"Correct! Both transcriptions match the reference.":"Not quite. Here's how each part was evaluated:",
-    adultCorrect?`✓ Adult word: /${adult}/ matches the reference /${q.target}/.`:
+    adultCorrect?(adultVariant?
+      `✓ Adult word: /${adult}/ is accepted as an unstressed final-vowel variant of /${q.target}/.`:
+      `✓ Adult word: /${adult}/ matches the reference /${q.target}/.`):
       `✕ Adult word: you entered /${adult}/, but the reference is /${q.target}/.`,
-    childCorrect?`✓ Applied process: [${child}] matches [${q.child}].`:
+    childCorrect?(childVariant?
+      `✓ Applied process: [${child}] is an accepted final-vowel variant of [${q.child}].`:
+      `✓ Applied process: [${child}] matches [${q.child}].`):
       `✕ Applied process: you entered [${child}], but ${q.answer} gives [${q.child}] in this example.`,
+    ...( /^ŋ/gu.test(normalizeTranscription(child)) ?
+      ['Note: English normally does not allow a word-initial velar nasal [ŋ]. Use a different place substitution unless a specific production is documented.'] : []),
     q.explain
   ]){const paragraph=document.createElement("p");paragraph.textContent=line;feedback.appendChild(paragraph);}
   procHistory.push({question:`${q.word} — apply ${q.answer} (IPA transcription)`,
     response:`Adult: /${adult}/; with process: [${child}]`,
     answer:`Adult: /${q.target}/; with process: [${q.child}]`,correct,
-    note:`Adult transcription: ${adultCorrect?"correct":"incorrect"}; process application: ${childCorrect?"correct":"incorrect"}. ${q.explain}`});
+    note:`Adult transcription: ${adultCorrect?"correct":"incorrect"}${adultVariant?' (accepted final-vowel variant)':''}; process application: ${childCorrect?"correct":"incorrect"}${childVariant?' (accepted final-vowel variant)':''}. ${q.explain}`});
   $("proc-next").disabled=false;$("proc-refresh").disabled=true;$("transcribe-submit").disabled=true;
   for(const id of ["transcribe-adult","transcribe-child"])$(id).disabled=true;
   for(const button of $("transcribe-keys").querySelectorAll("button"))button.disabled=true;
